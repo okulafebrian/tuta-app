@@ -13,14 +13,14 @@
         <link rel="apple-touch-icon" sizes="180x180" href="/storage/assets/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/storage/assets/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/storage/assets/favicon/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
+        {{-- <link rel="manifest" href="/site.webmanifest"> --}}
 
         <!-- Scripts -->
         @routes
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
-    <body class="font-sans antialiased bg-lime-50">
+    <body class="font-sans antialiased">
         @inertia
     </body>
 </html>
