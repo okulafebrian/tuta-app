@@ -1,4 +1,6 @@
 <template>
+    <Head title="Daftar Produk" />
+
     <AuthenticatedLayout>
         <div class="py-10">
             <div class="flex items-center justify-between mb-6">
@@ -14,6 +16,7 @@
                     <thead class="border-b text-xs">
                         <tr class="text-left">
                             <th class="py-3 pl-4">DETAIL PRODUK</th>
+                            <th class="py-3 pl-4"></th>
                         </tr>
                     </thead>
                     <tbody class="text-sm">
@@ -21,6 +24,11 @@
                             <td class="py-2 pl-4">
                                 <p class="font-medium">{{ shoe.name }}</p>
                                 <p class="text-xs">{{ shoe.category.name }}</p>
+                            </td>
+                            <td>
+                                <Link :href="route('shoes.edit', shoe)" class="font-medium hover:text-zinc-600">
+                                Edit
+                                </Link>
                             </td>
                         </tr>
                     </tbody>
@@ -32,11 +40,11 @@
 
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
 export default {
     components: {
-        AuthenticatedLayout, Link
+        AuthenticatedLayout, Link, Head
     },
     props: {
         shoes: Object

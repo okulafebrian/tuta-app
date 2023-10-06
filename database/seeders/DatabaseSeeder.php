@@ -16,9 +16,10 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ColorSeeder::class,
             SizeSeeder::class,
-            ShoeSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
+            ShoeSeeder::class,
+            ShoeVariantSeeder::class,
         ]);
     }
 }

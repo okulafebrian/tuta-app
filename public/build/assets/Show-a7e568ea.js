@@ -1,0 +1,1 @@
+import{_ as t}from"./GuestLayout-de0b3a49.js";import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{r as s,o as r,c}from"./app-541a671a.js";const n={components:{GuestLayout:t},props:{category:Object}};function a(p,_,m,u,f,i){const o=s("GuestLayout");return r(),c(o)}const y=e(n,[["render",a]]);export{y as default};

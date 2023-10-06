@@ -7,7 +7,7 @@
     <div class="">
         <p class="text-xs font-medium uppercase">{{ product.category.name }}</p>
         <h4 class="text-sm line-clamp-2 my-2">{{ product.name }}</h4>
-        <div v-if="product.discount_price" class="flex gap-2">
+        <div v-if="product.discount_price" class="flex flex-col lg:flex-row lg:gap-2">
             <div class="font-semibold">Rp{{ formatNumber(product.discount_price) }}</div>
             <div class="text-gray-400 line-through">Rp{{ formatNumber(product.price) }}</div>
         </div>

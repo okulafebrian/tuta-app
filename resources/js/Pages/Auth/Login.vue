@@ -1,9 +1,6 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -30,54 +27,46 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="mx-[28rem] py-20">
+    <Head title="Log in" />
 
-        <Head title="Log in" />
-
+    <div class="bg-gray-100 h-screen flex items-center">
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
         </div>
 
-        <div class="mb-12">
-            <img src="/storage/assets/logo.png" class="w-auto h-12 mx-auto">
+        <div class="bg-white rounded-xl shadow-lg mx-auto p-10 w-1/3">
+            <div class="mb-10">
+                <Link :href="route('home')">
+                <img src="/storage/assets/logo.png" class="w-auto h-10 mx-auto">
+                </Link>
+            </div>
+
+            <form @submit.prevent="submit">
+                <div>
+                    <InputLabel for="email" value="Email" />
+
+                    <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus
+                        autocomplete="username" />
+
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <div class="mt-4">
+                    <InputLabel for="password" value="Password" />
+
+                    <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required
+                        autocomplete="current-password" />
+
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+
+                <div class="mt-8">
+                    <button class="py-3 rounded-md bg-lime-500 hover:bg-lime-600 text-white w-full font-medium text-sm"
+                        :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
+                        Log in
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus
-                    autocomplete="username" />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required
-                    autocomplete="current-password" />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <!-- <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div> -->
-
-            <div class="mt-8">
-                <!-- <Link v-if="canResetPassword" :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Forgot your password?
-                </Link> -->
-                <button class="py-3 rounded-md bg-lime-500 hover:bg-lime-600 text-white w-full font-medium text-sm"
-                    :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
-                    Log in
-                </button>
-            </div>
-        </form>
     </div>
 </template>

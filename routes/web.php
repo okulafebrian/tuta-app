@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -12,16 +13,25 @@ use Inertia\Inertia;
 
 
 Route::get('/', HomeController::class)->name('home');
-Route::get('/dashboard', DashboardController::class)->name('dashboard');
+Route::get('dashboard', DashboardController::class)->name('dashboard');
 
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+    Route::delete('/remove[{key}', [CartController::class, 'remove'])->name('remove');
+});
+Route::get('cart', CartController::class)->name('cart');
 
-Route::prefix('/shop')->name('shop.')->group(function () {
+Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/', [ShopController::class, 'index'])->name('index');
     Route::get('/{category}', [ShopController::class, 'category'])->name('category');
     Route::get('/{category}/{shoe}', [ShopController::class, 'shoe'])->name('shoe');
 });
 
+Route::prefix('shoes')->name('shoes.')->group(function () {
+    Route::post('/update-photo', [ShoeController::class, 'updatePhoto'])->name('update-photo');
+});
 Route::resource('shoes', ShoeController::class);
+
 Route::resource('categories', CategoryController::class);
 
 require __DIR__.'/auth.php';
