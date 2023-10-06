@@ -42,7 +42,7 @@
                         <div>Total</div>
                         <div>Rp{{ formatNumber(total) }}</div>
                     </div>
-                    <button class="py-3 w-full font-medium text-white bg-lime-600 hover:bg-lime-700 rounded-full">
+                    <button @click="createTransaction" class="py-3 w-full font-medium text-white bg-lime-600 hover:bg-lime-700 rounded-full">
                         Beli
                     </button>
                 </div>
@@ -70,6 +70,9 @@ export default {
         },
         remove(key) {
             router.delete(route('cart.remove', key))
+        },
+        createTransaction() {
+            router.post(route('transaction.create'))
         }
     }
 }

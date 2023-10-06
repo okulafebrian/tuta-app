@@ -29,8 +29,8 @@ class CartController extends Controller
                         ->join('colors', 'shoe_variants.color_id', 'colors.id')
                         ->select('shoe_variants.id as shoe_variant_id', 'shoes.code', 'shoes.name', 'shoes.price', 'shoes.discount_price', 'categories.name AS category', 'colors.name AS color', 'sizes.name AS size')
                         ->where('shoe_id', $shoeId)
-                        ->where('color_id', $colorId)
-                        ->where('size_id', $sizeId)
+//                        ->where('color_id', $colorId)
+//                        ->where('size_id', $sizeId)
                         ->first();
 
                 $shoe->key = $key;
@@ -50,12 +50,12 @@ class CartController extends Controller
 
     public function add(CartRequest $request)
     {
-        $shoetId = $request->input('shoe_id');
+        $shoeId = $request->input('shoe_id');
         $colorId = $request->input('color');
         $sizeId = $request->input('size');
         $quantity = $request->input('quantity');
         
-        $cartKey = "$shoetId-$colorId-$sizeId";
+        $cartKey = "$shoeId-$colorId-$sizeId";
 
         $cart = session('cart', []);
 

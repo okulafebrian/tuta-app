@@ -30,5 +30,27 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    
+    'midtrans' => [
+        'merchant_id' => env('MIDTRANS_MERCHANT_ID'),
+        'client_key' => env('MIDTRANS_CLIENT_KEY'),
+        'server_key' => env('MIDTRANS_SERVER_KEY'),
+        'is_production' => ((bool) env('APP_ENV') != 'production'),
+        'is_sanitized' => false,
+        'is_3ds' => false,
+    ],
+    
+    'jnt' => [
+        'username' => env('JNT_USERNAME'),
+        'api_key' => env('JNT_API_KEY'),
+        'order_key' => env('JNT_ORDER_KEY'),
+        'order_url' => env('JNT_ORDER_URL'),
+        'tariff_check_key' => env('JNT_TARIFF_CHECK_KEY'),
+        'tariff_check_url' => env('JNT_TARIFF_CHECK_URL'),
+        'track_key' => env('JNT_TRACK_KEY'),
+        'track_url' => env('JNT_TRACK_URL'),
+        'cancel_key' => env('JNT_CANCEL_KEY'),
+        'cancel_url' => env('JNT_CANCEL_URL'),
+    ]
 
 ];
