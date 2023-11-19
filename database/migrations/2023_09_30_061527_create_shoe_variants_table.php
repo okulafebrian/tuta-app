@@ -19,9 +19,8 @@ return new class extends Migration
             $table->foreign('size_id')->references('id')->on('sizes')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('color_id');
             $table->foreign('color_id')->references('id')->on('colors')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('price')->nullable();
-            $table->integer('discount_price')->nullable();
             $table->integer('stock')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }

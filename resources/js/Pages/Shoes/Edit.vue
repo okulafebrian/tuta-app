@@ -1,139 +1,142 @@
 <template>
     <Head title="Edit Produk" />
 
-    <AuthenticatedLayout>
-        <div class="py-10">
-            <form @submit.prevent="form.put(route('shoes.update', shoe))">
-                <h2 class="text-xl font-semibold mb-6">Edit Produk</h2>
+    <div class="h-full px-10 pt-8 pb-16 bg-gray-100 overflow-y-auto">
+        <div class="text-xl font-semibold mb-6">Edit Produk</div>
 
-                <div class="bg-white p-8 rounded-md mb-4">
-                    <h3 class="font-semibold mb-6">Informasi Produk</h3>
-                    <div class="text-sm flex items-center mb-6">
-                        <div class="w-1/6 text-sm">Foto Produk</div>
-                        <div class="w-5/6">
-                            <form @submit.prevent="img.post(route('shoes.update-photo'))">
-                                <div class="flex justify-between">
-                                    <input @input="img.photos = $event.target.files" type="file" multiple="multiple"
-                                        class="focus:outline-0 focus:ring-0 file:font-medium file:rounded-md file:border-solid file:border file:border-gray-300 file:bg-neutral-100 file:hover:bg-neutral-200 file:py-1 file:px-2 file:mr-2">
-                                    <button type="submit"
-                                        class="px-2 py-1 font-medium border border-gray-300 bg-neutral-100 hover:bg-gray-200 rounded-md">
-                                        Ganti Foto
-                                    </button>
+        <div class="p-8 bg-white rounded-sm shadow-sm space-y-6 mb-4">
+            <div class="text-sm flex gap-10 items-top">
+                <div class="w-[20%] font-medium">
+                    <div class="font-medium mb-2">Foto Produk</div>
+                    <div class="text-xs text-zinc-500">
+                        Format gambar .jpg .jpeg .png dan rasio 1:1 (persegi).
+                    </div>
+                </div>
+                <div class="flex-1 flex gap-2">
+                    <div v-for="(photo, index) in form.main_photos" :key="index">
+                        <ImagePreview v-if="photo" :source="photo.url" @removePhoto="removePhoto(index, 'main')" />
+                        <label v-else :for="'mainPhotos' + index"
+                            class="flex flex-col items-center justify-center cursor-pointer">
+                            <div
+                                class="h-24 w-24 flex flex-col gap-2 items-center justify-center rounded-md border border-dashed border-gray-300 hover:border-lime-600  text-zinc-500 hover:text-lime-600 overflow-hidden">
+                                <PhotoIcon class="w-8 h-8" />
+                                <div class="text-xs">Foto {{ index == 0 ? 'Sampul' : '(' + index + '/5)' }}</div>
+                            </div>
+                            <input :id="'mainPhotos' + index" type="file" class="hidden"
+                                @change="handleImageUpload(index, 'main')" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-sm flex items-center gap-10">
+                <div class="w-[20%] font-medium">Nama Produk</div>
+                <input v-model="form.name" type="text" class="flex-1 text-sm border-gray-200 rounded-md">
+            </div>
+
+            <div class="text-sm flex items-center gap-10">
+                <div class="w-[20%] font-medium">Kategori Produk</div>
+                <select v-model="form.category" class="text-sm border-gray-200 rounded-md flex-1">
+                    <option disabled value="">Pilih kategori</option>
+                    <option v-for="category in categories" :value="category.id" :key="category.id">
+                        {{ category.name }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="text-sm flex items-center gap-10">
+                <div class="w-[20%] font-medium">Harga</div>
+                <div class="flex-1 flex items-center border border-gray-200 bg-gray-100 rounded-md overflow-hidden w-fit">
+                    <div class="text-sm text-gray-500 font-semibold px-3">Rp</div>
+                    <input type="text" class="text-sm border-0 focus:ring-0 w-full" v-model="form.price"
+                        @input="formattedPrice">
+                </div>
+            </div>
+
+            <div class="text-sm flex items-top gap-10">
+                <div class="w-[20%] font-medium">Deskripsi Produk</div>
+                <Editor v-model="form.description" class="flex-1" />
+            </div>
+
+            <div class="text-sm flex items-top gap-10">
+                <div class="w-[20%] font-medium text-sm">Warna</div>
+                <div class="flex-1 grid grid-cols-7 gap-y-4">
+                    <div v-for="color in colors" class="flex items-center">
+                        <input v-model="form.colors" :value="color" :id="color.id" type="checkbox"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-200 rounded focus:ring-blue-500">
+                        <label :for="color.id" class="ml-2 text-sm">{{ color.name }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-top gap-10">
+                <div class="w-[20%] font-medium text-sm">Variasi Produk</div>
+                <div class="flex-1 border divide-y text-sm rounded-sm">
+                    <div class="flex divide-x font-medium">
+                        <div class="w-[30%] px-4 py-2">Foto Produk</div>
+                        <div class="w-[30%] px-4 py-2">Warna</div>
+                        <div class="w-[20%] font-medium px-4 py-2">Ukuran</div>
+                        <div class="w-[20%] font-medium px-4 py-2">Stok</div>
+                    </div>
+                    <div v-for="color in form.colors" class="flex divide-x">
+                        <div class="w-[30%] flex justify-center items-center">
+                            <div v-if="form.variant_photos[color.id]" :key="color.id" class="flex justify-center">
+                                <ImagePreview :source="form.variant_photos[color.id].url"
+                                    @removePhoto="removePhoto(color.id, 'variant')" />
+                            </div>
+                            <label v-else :for="'variant_photos' + color.id"
+                                class="flex flex-col items-center cursor-pointer">
+                                <div
+                                    class="h-24 w-24 flex flex-col gap-2 items-center justify-center rounded-md border border-dashed border-gray-300 hover:border-lime-600  text-zinc-500 hover:text-lime-600 overflow-hidden">
+                                    <PhotoIcon class="w-8 h-8" />
+                                    <div class="text-xs">Tambah Foto</div>
                                 </div>
-                            </form>
+                                <input :id="'variant_photos' + color.id" type="file" class="hidden"
+                                    @change="handleImageUpload(color.id, 'variant')" />
+                            </label>
                         </div>
-                    </div>
-                    <div class="text-sm flex items-center mb-6">
-                        <div class="w-1/6">Nama Produk</div>
-                        <input v-model="form.name" type="text" class="w-5/6 text-sm border-gray-300 rounded-md">
-                    </div>
-                    <div class="text-sm flex items-center mb-6">
-                        <div class="w-1/6">Kategori Produk</div>
-                        <select v-model="form.category" class="text-sm border-gray-300 rounded-md w-5/6">
-                            <option disabled value="">Pilih kategori</option>
-                            <option v-for="category in categories" :value="category.id" :key="category.id">
-                                {{ category.name }}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="text-sm flex items-center mb-6">
-                        <div class="w-1/6">Harga</div>
-                        <input v-model="form.price" type="number" class="w-5/6 text-sm border-gray-300 rounded-md">
-                    </div>
-                    <div class="text-sm flex items-center mb-6">
-                        <div class="w-1/6">Harga Diskon</div>
-                        <input v-model="form.discount_price" type="number" class="w-5/6 text-sm border-gray-300 rounded-md">
-                    </div>
-                    <div class="text-sm flex items-start">
-                        <div class="w-1/6">Deskripsi Produk</div>
-                        <Editor v-model="form.description" class="w-5/6" />
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-md mb-6">
-                    <h3 class="font-semibold mb-6">Informasi Penjualan</h3>
-                    <div class="flex items-start mb-6">
-                        <div class="w-1/6 text-sm">Warna</div>
-                        <div class="w-5/6 grid grid-cols-7 gap-y-4">
-                            <div v-for="color in colors" class="flex items-center">
-                                <input v-model="form.colors" :value="color" :id="color.id" type="checkbox"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                                <label :for="color.id" class="ml-2 text-sm">{{ color.name }}</label>
-                            </div>
+                        <div class=" w-[30%] flex items-center px-4">
+                            {{ color.name }}
                         </div>
-                    </div>
-                    <div class="flex items-center mb-6">
-                        <div class="w-1/6 text-sm">Ukuran</div>
-                        <div class="w-5/6 grid grid-cols-7">
-                            <div v-for="size in sizes" class="flex items-center">
-                                <input v-model="form.sizes" :value="size" :id="size.id" type="checkbox"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                                <label :for="size.id" class="ml-2 text-sm">{{ size.name }}</label>
-                            </div>
+                        <div class="w-[20%] divide-y">
+                            <div v-for="size in sizes" class="px-4 py-2">{{ size.name }}</div>
                         </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="w-1/6 text-sm">Daftar variasi</div>
-                        <div class="w-5/6">
-                            <div class="border overflow-hidden rounded-lg text-sm">
-                                <table class="table-fixed w-full">
-                                    <thead class="font-semibold bg-gray-100">
-                                        <tr class="divide-x">
-                                            <td class="px-4 py-2">Warna</td>
-                                            <td class="px-4 py-2">Ukuran</td>
-                                            <td class="px-4 py-2">Harga</td>
-                                            <td class="px-4 py-2">Harga Diskon</td>
-                                            <td class="px-4 py-2">Stok</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y">
-                                        <template v-for="color in form.colors">
-                                            <tr v-for="size in form.sizes" :key="`${color}-${size}`" class="divide-x">
-                                                <td class="px-4 py-2">{{ color.name }}</td>
-                                                <td class="px-4 py-2">{{ size.name }}</td>
-                                                <td class="px-4 py-2">
-                                                    <input v-model="form.prices[color.id][size.id]" type="number"
-                                                        class="border-gray-300 rounded-md text-sm w-full">
-                                                </td>
-                                                <td class="px-4 py-2">
-                                                    <input v-model="form.discount_prices[color.id][size.id]" type="number"
-                                                        class="border-gray-300 rounded-md text-sm w-full">
-                                                </td>
-                                                <td class="px-4 py-2">
-                                                    <input v-model="form.stocks[color.id][size.id]" type="number"
-                                                        class="border-gray-300 rounded-md text-sm w-full">
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
+                        <div class="w-[20%] divide-y">
+                            <div v-for="size in sizes">
+                                <input type="number" class="w-full text-sm border-0 px-4"
+                                    v-model="form.stocks[color.id][size.id]">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-end gap-2 text-sm">
-                    <Link :href="route('shoes.index')"
-                        class="border border-gray-300 bg-white hover:bg-gray-50 font-medium py-2 px-10 rounded-md">
-                    Batal
-                    </Link>
-                    <button type="submit"
-                        class="border bg-lime-500 hover:bg-lime-600 text-white font-medium py-2 px-10 rounded-md">
-                        Simpan
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
-    </AuthenticatedLayout>
+
+        <div class="flex justify-end gap-3 py-2 text-sm font-medium">
+            <Link :href="route('shoes.index')" class="border bg-white py-2 px-10 rounded-sm">
+            Batal
+            </Link>
+            <button type="button" @click="updateShoe"
+                class="bg-lime-600 disabled:bg-lime-500/50 text-white py-2 px-10 rounded-sm">
+                Simpan
+            </button>
+        </div>
+    </div>
 </template>
 
 <script>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from "@inertiajs/vue3"
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { useForm } from "@inertiajs/vue3"
+import { PhotoIcon } from '@heroicons/vue/24/outline'
 import Editor from "@/Components/Editor.vue"
+import ImagePreview from '@/Components/ImagePreview.vue'
+
 
 export default {
     components: {
-        AuthenticatedLayout, Link, useForm, Editor, Head
+        Editor,
+        PhotoIcon,
+        ImagePreview
     },
     props: {
         shoe: Object,
@@ -141,82 +144,134 @@ export default {
         colors: Object,
         sizes: Object,
         selectedColors: Object,
-        selectedSizes: Object,
-        variants: Object,
-        prices: Object,
-        discountPrices: Object,
         stocks: Object,
+        mainPhotos: Array,
+        variantPhotos: Object,
     },
     watch: {
-        'form.sizes': 'initializeColorsPrices',
-        'form.colors'(colors) {
-            this.initializeColorsPrices()
-            if (colors.length < 1) {
-                this.form.sizes = []
-            }
+        'form.colors'() {
+            this.initializeVariant()
         }
     },
     methods: {
-        initializeColorsPrices() {
-            for (const color of this.form.colors) {
-                if (!this.form.prices[color.id]) {
-                    this.form.prices[color.id] = {};
-                    this.form.discount_prices[color.id] = {};
-                    this.form.stocks[color.id] = {};
+        formattedPrice() {
+            let inputValue = this.form.price.toString().replace(/\D/g, "");
+
+            inputValue = inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+            this.form.price = inputValue;
+        },
+        initializeVariant() {
+            for (const key in this.form.colors) {
+                let color = this.form.colors[key]
+
+                if (!this.form.variant_photos[color.id]) {
+                    this.form.variant_photos[color.id] = ''
                 }
 
-                for (const size of this.form.sizes) {
-                    if (this.prices[color.id] && this.prices[color.id][size.id] !== undefined) {
-                        this.form.prices[color.id][size.id] = this.prices[color.id][size.id];
-                    } else {
-                        this.form.prices[color.id][size.id] = 0;
-                    }
+                if (!this.form.stocks[color.id]) {
+                    this.form.stocks[color.id] = {}
+                }
 
-                    if (this.discountPrices[color.id] && this.discountPrices[color.id][size.id] !== undefined) {
-                        this.form.discount_prices[color.id][size.id] = this.discountPrices[color.id][size.id];
-                    } else {
-                        this.form.discount_prices[color.id][size.id] = 0;
-                    }
+                for (const key in this.sizes) {
+                    let size = this.sizes[key]
 
-                    if (this.stocks[color.id] && this.stocks[color.id][size.id] !== undefined) {
-                        this.form.stocks[color.id][size.id] = this.stocks[color.id][size.id];
-                    } else {
-                        this.form.stocks[color.id][size.id] = 0;
+                    if (!this.form.stocks[color.id][size.id]) {
+                        this.form.stocks[color.id][size.id] = 0
                     }
                 }
             }
         },
+        handleImageUpload(index, type) {
+            if (type === 'main') {
+                this.form.main_photos[index] = {
+                    'url': URL.createObjectURL(event.target.files[0]),
+                    'item': event.target.files[0]
+                }
+            } else {
+                this.form.variant_photos[index] = {
+                    'url': URL.createObjectURL(event.target.files[0]),
+                    'item': event.target.files[0]
+                }
+            }
+
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader()
+                reader.onload = (e) => {
+
+                };
+                reader.readAsDataURL(input.files[0])
+
+                if (type === 'main' && this.form.main_photos.length < 5) {
+                    this.form.main_photos.push('')
+                }
+            }
+        },
+        removePhoto(index, type) {
+            if (type === 'main') {
+                this.form.main_photos.splice(index, 1);
+
+                if (this.form.main_photos.length === 0 || this.form.main_photos[this.form.main_photos.length - 1] !== '') {
+                    this.form.main_photos.push('')
+                }
+            } else {
+                this.form.variant_photos[index] = '';
+            }
+        },
+        updateShoe() {
+            this.form.price = this.form.price.replace(/\D/g, '')
+            this.form.post(route('shoes.update', this.shoe), {
+                preserveScroll: true
+            })
+        },
     },
     created() {
-        this.initializeColorsPrices()
+        this.initializeVariant()
+
+        if (this.form.main_photos.length < 5) {
+            this.form.main_photos.push('')
+        }
     },
     setup(props) {
         const form = useForm({
+            _method: 'put',
+            main_photos: [],
             category: props.shoe.category_id,
             name: props.shoe.name,
-            price: props.shoe.price,
-            discount_price: props.shoe.discount_price,
+            price: props.shoe.price.toLocaleString("id-ID"),
             description: props.shoe.description,
             colors: props.selectedColors.map(obj => ({
                 id: obj.id,
                 name: obj.name
             })),
-            sizes: props.selectedSizes.map(obj => ({
-                id: obj.id,
-                name: obj.name
-            })),
-            prices: {},
-            discount_prices: {},
+            variant_photos: {},
             stocks: {}
         })
 
-        const img = useForm({
-            code: props.shoe.code,
-            photos: ""
-        })
+        props.mainPhotos.forEach((photo, index) => {
+            form.main_photos[index] = {
+                'url': '/storage/shoes/' + props.shoe.code + '/main/' + photo,
+                'item': photo
+            }
+        });
 
-        return { form, img }
-    }
+        props.selectedColors.forEach(color => {
+            form.variant_photos[color.id] = {
+                'url': '/storage/shoes/' + props.shoe.code + '/' + props.variantPhotos[color.id],
+                'item': props.variantPhotos[color.id]
+            }
+
+            form.stocks[color.id] = {}
+
+            props.sizes.forEach(size => {
+                form.stocks[color.id][size.id] = props.stocks[color.id][size.id]
+            })
+        });
+
+        return { form }
+    },
+    layout: AdminLayout
 }
 </script>
 

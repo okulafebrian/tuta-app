@@ -1,34 +1,34 @@
 <template>
     <Head title="Semua Produk" />
 
-    <GuestLayout>
-        <div class="px-4 lg:px-20 py-24">
-            <div class="mb-8">
-                <Dropdown :options="$page.props.categories">
-                    <h4 class="text-xl font-semibold">Semua Produk ({{ shoes.length }})</h4>
-                </Dropdown>
-            </div>
+    <div class="px-4 xl:px-16 pt-6 xl:pt-10">
+        <div class="text-xl xl:text-2xl font-semibold mb-6">
+            {{ search ?? 'Semua Produk' }} ({{ shoes.length }})
+        </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-10 gap-x-5 lg:gap-x-10">
-                <ProductCard :products="shoes" />
+
+        <div class="grid grid-cols-2 xl:grid-cols-5 gap-x-4 gap-y-8">
+            <div v-for="shoe in shoes">
+                <ShoeCard :shoe="shoe" :category="shoe.category" />
             </div>
         </div>
-    </GuestLayout>
+    </div>
 </template>
 
 <script>
-import GuestLayout from "@/Layouts/GuestLayout.vue"
-import ProductCard from "@/Components/ProductCard.vue"
-import { Head, Link } from '@inertiajs/vue3';
-import Dropdown from "@/Components/Dropdown.vue";
+import ShoeCard from "@/Components/ShoeCard.vue"
+import UserLayout from "@/Layouts/UserLayout.vue";
+import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 
 export default {
     components: {
-        GuestLayout, ProductCard, Link, Head, Dropdown
+        ShoeCard, MagnifyingGlassIcon
     },
     props: {
-        shoes: Object
-    }
+        shoes: Object,
+        search: String,
+    },
+    layout: UserLayout
 }
 </script>
 

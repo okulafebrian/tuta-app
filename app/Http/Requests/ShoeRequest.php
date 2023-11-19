@@ -22,9 +22,12 @@ class ShoeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category' => 'required',
+            'main_photos' => 'required',
             'name' => 'required',
+            'category' => 'required',
+            'price' => 'required',
             'description' => 'required',
+            'colors' => 'required',
         ];
     }
 }

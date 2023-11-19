@@ -18,8 +18,6 @@ class DatabaseSeeder extends Seeder
             SizeSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
-            ShoeSeeder::class,
-            ShoeVariantSeeder::class,
         ]);
     }
 }

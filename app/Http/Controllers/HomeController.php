@@ -10,8 +10,19 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
+        $shoes = Shoe::with('category')->paginate(5);
+        
+        foreach ($shoes as $shoe) {
+            $shoe['mainPhoto'] = $shoe->getMainPhoto();
+        }
+
         return inertia('Home', [
-            'shoes' => Shoe::all()
+            'shoes' => $shoes
         ]);
+    }
+
+    public function about()
+    {
+        return inertia('About');
     }
 }

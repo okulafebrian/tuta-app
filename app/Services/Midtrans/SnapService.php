@@ -13,29 +13,36 @@ class SnapService extends Midtrans
      * @return object
      * @throws Exception
      */
-    public function createTransaction($transaction)
+    public function createTransaction($order)
     {
         $itemDetails = [];
         
-        foreach ($transaction->getTransactionDetails() as $transactionDetail) {
+        foreach ($order->getOrderDetails() as $orderDetail) {
             $itemDetails[] = [
-                'id' => $transactionDetail->id,
-                'price' => $transactionDetail->price,
-                'quantity' => $transactionDetail->quantity,
-                'name' => substr($transactionDetail->getShoe()->name, 0, 20)
+                'id' => $orderDetail->id,
+                'price' => $orderDetail->price,
+                'quantity' => $orderDetail->quantity,
+                'name' => substr($orderDetail->name, 0, 20)
             ];
         }
+
+        $itemDetails[] = [
+            'id' => 'SF',
+            'price' => $order->shipping_fee,
+            'quantity' => 1,
+            'name' => "Total Ongkos Kirim"
+        ];
         
         $params = [
             'transaction_details' => [
-                'order_id' => $transaction->code,
-                'gross_amount' => $transaction->total_price,
+                'order_id' => $order->code,
+                'gross_amount' => $order->total_payment,
             ],
             'item_details' => $itemDetails,
             'customer_details' => [
-                'first_name' => 'User',
-                'email' => 'user@mailinator.com',
-                'phone' => '081122334455',
+                'first_name' => $order->user->name,
+                'email' => null,
+                'phone' => $order->user->phone,
             ],
             'credit_card' => [
                 'secure' => true
@@ -52,8 +59,9 @@ class SnapService extends Midtrans
         
         $snap = Snap::createTransaction($params);
         
-        $transaction->payment_token = $snap->token;
-        $transaction->save();
+        $order->payment_token = $snap->token;
+        $order->redirect_url = $snap->redirect_url;
+        $order->save();
         
         return $snap;
     }

@@ -10,17 +10,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Shipping extends Model
 {
     use HasFactory, SoftDeletes;
-    
     protected $table = 'shippings';
-    
     protected $primaryKey = 'id';
-    
     protected $timestamp = true;
-    
     protected $guarded = [];
 
-    public function transaction(): BelongsTo
+    public function order(): BelongsTo
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(Order::class);
     }
 }

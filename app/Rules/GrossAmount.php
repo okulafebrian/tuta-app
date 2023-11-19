@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Models\Transaction;
+use App\Models\Order;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -28,9 +28,9 @@ class GrossAmount implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $transaction = Transaction::where('code', $this->input['order_id'])->firstOrFail();
+        $order = Order::where('code', $this->input['order_id'])->firstOrFail();
 
-        if ((int) $transaction->total_price != (int) $value) {
+        if ((int) $order->total_price != (int) $value) {
             $fail('The :attribute not match.');
         }
     }

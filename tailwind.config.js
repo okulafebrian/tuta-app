@@ -20,6 +20,17 @@ export default {
     },
 
     plugins: [
-        forms, typography,
+        forms,
+        typography,
+        function ({ addUtilities }) {
+            const emptyBefore = {
+                '.empty-before p:empty::before': {
+                    content: "''",
+                    display: 'inline-block',
+                },
+            };
+
+            addUtilities(emptyBefore);
+        },
     ],
 };

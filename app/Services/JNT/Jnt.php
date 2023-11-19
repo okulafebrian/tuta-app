@@ -36,43 +36,45 @@ class Jnt
      * @param $orderId
      * @return array|mixed
      */
-    public function createOrder($orderId)
+    public function createOrder($orderData)
     {
         $data = [
             'username' => $this->username,
             'api_key' => $this->api_key,
-            'orderid' => $orderId,
-            'shipper_name' => 'PENGIRIM',
-            'shipper_contact' => 'PENGIRIM',
-            'shipper_phone' => '+628123456789',
-            'shipper_addr' => 'JL. Pengirim no.88, RT/RW:001/010, Pluit',
+            'orderid' => $orderData['orderid'],
+            'shipper_name' => 'TUTA OFFICIAL SHOP',
+            'shipper_contact' => 'TUTA OFFICIAL SHOP',
+            'shipper_phone' => '+6281110019979',
+            'shipper_addr' => 'GREEN LAKE CITY RUKAN CBD BLOK F NOMOR 022, Ketapang',
             'origin_code' => 'JKT',
-            'receiver_name' => 'PENERIMA',
-            'receiver_phone' => '+62812348888',
-            'receiver_addr' => 'JL. Penerima no.1, RT/RW:04/07, Sidoarjo',
-            'receiver_zip' => '40123',
-            'destination_code' => 'JKT',
-            'receiver_area' => 'JKT001',
-            'qty' => '1',
+            'receiver_name' => $orderData['receiver_name'],
+            'receiver_phone' => $orderData['receiver_phone'],
+            'receiver_addr' => $orderData['receiver_addr'],
+            'receiver_zip' => $orderData['receiver_zip'],
+            'destination_code' => $orderData['destination_code'],
+            'receiver_area' => $orderData['receiver_area'],
+            'qty' => $orderData['qty'],
             'weight' => '1',
-            'goodsdesc' => 'TESTING!!',
+            'goodsdesc' => 'Sepatu',
             'servicetype' => '1',
-            'insurance' => '122',
-            'orderdate' => Carbon::now(),
-            'item_name' => 'topi',
-            'cod' => '120000',
-            'sendstarttime' => Carbon::now(),
-            'sendendtime' => Carbon::now(),
+            'insurance' => '',
+            'orderdate' => Carbon::now()->format('Y-m-d H:i:s'),
+            'item_name' => 'Sepatu',
+            'cod' => '',
+            'sendstarttime' => Carbon::now()->format('Y-m-d H:i:s'),
+            'sendendtime' => Carbon::now()->format('Y-m-d H:i:s'),
             'expresstype' => '1',
-            'goodsvalue' => '1000',
+            'goodsvalue' => $orderData['goodsvalue'],
         ];
         
         $dataJson = json_encode(['detail' => array($data)]);
-        
+        dd($dataJson);
         $dataRequest = [
             'data_param' => $dataJson,
-            'data_sign' => base64_encode(md5(($dataJson) . $this->order_key))
+            'data_sign' => base64_encode(md5($dataJson . $this->order_key))
         ];
+
+        dd(json_encode(Http::asForm()->post($this->order_url, $dataRequest)->json()));
         
         return Http::asForm()->post($this->order_url, $dataRequest)->json();
     }
@@ -89,17 +91,17 @@ class Jnt
             'weight' => $weight,
             'sendSiteCode' => $sendSiteCode,
             'destAreaCode' => $destAreaCode,
-            'cusName' => 'Budi',
+            'cusName' => 'TUTA',
             'productType' => 'EZ'
         ];
         
-        $dataJson = json_encode(['detail' => array($data)]);
-        
+        $dataJson = json_encode($data);
+        // dd($dataJson);
         $dataRequest = [
             'data' => $dataJson,
-            'sign' => base64_encode(md5(($dataJson) . $this->tariff_check_key))
+            'sign' => base64_encode(md5($dataJson . $this->tariff_check_key))
         ];
-        
+        // dd(json_encode(Http::asForm()->post($this->tariff_check_url, $dataRequest)->json()));
         return Http::asForm()->post($this->tariff_check_url, $dataRequest)->json();
     }
     

@@ -16,11 +16,22 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'role_id' => '1',
-                'name' => 'TUTA ADMIN',
-                'email' => 'tuta@gmail.com',
-                'email_verified_at' => '2023-09-17 15:20:56',
+                'role_id' => '2',
+                'first_name' => 'TUTA SUPERADMIN',
+                'last_name' => null,
+                'email' => 'tutamandiriindonesia@gmail.com',
+                'phone' => null,
+                'phone_verified_at' => null,
                 'password' => Hash::make('abc123')
+            ],
+            [
+                'role_id' => '1',
+                'first_name' => 'Vincent',
+                'last_name' => 'Febrien',
+                'email' => null,
+                'phone' => '+6285156028260',
+                'phone_verified_at' => now(),
+                'password' => null
             ],
         ]);
     }

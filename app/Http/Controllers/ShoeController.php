@@ -8,9 +8,11 @@ use App\Models\Color;
 use App\Models\Shoe;
 use App\Models\ShoeVariant;
 use App\Models\Size;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,75 +20,112 @@ class ShoeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth']);
+        $this->middleware(['admin.auth']);
     }
     
     public function index()
     {
+        $search = request('search');
+
+        $shoes = Shoe::with('category')
+                    ->where('name' , 'LIKE', '%' . $search . '%')
+                    ->paginate(5);
+
+        foreach ($shoes as $shoe) {
+            $shoe['mainPhoto'] = $shoe->getMainPhoto();
+        }
         
         return inertia('Shoes/Index', [
-            'shoes' => Shoe::with('category')->get()
+            'shoes' => $shoes
+        ]);
+    }
+
+    public function manageDiscount()
+    {
+        $shoes = Shoe::with('category')->get();
+
+        foreach ($shoes as $shoe) {
+            $shoe['mainPhoto'] = $shoe->getMainPhoto();
+        }
+        
+        return inertia('Shoes/Discount', [
+            'shoes' => $shoes
         ]);
     }
 
     public function create()
     {
-        $categories = Category::all();
-        $colors = Color::all();
-        $sizes = Size::all();
-
         return inertia('Shoes/Create', [
-            'categories' => $categories,
-            'colors' => $colors,
-            'sizes' => $sizes,
+            'categories' => Category::all(),
+            'colors' => Color::all(),
+            'sizes' => Size::all(),
         ]);
     }
 
     public function store(ShoeRequest $request)
     {
+        if (count($request->file('variant_photos')) != count($request->colors)) {
+            return redirect()->back();
+        }
+
         DB::transaction(function () use($request) {
-            if ($request->hasFile('photos')) {
-                $photos = $request->file('photos');
+            $code = rand(1000, 9999);
+
+            $currentTime = time();
+
+            $mainFolderName = null;
+            
+            if ($request->file('main_photos')) {
+                $mainFolderName = 'main';
+
+                $path = 'public/shoes/' . $code . '/' . $mainFolderName .'/';
                 
-                $folderName = Str::random(7);
-                
-                $path = 'public/shoes/' . $folderName;
-                
-                foreach ($photos as $photo) {
-                    $originalFileName = $photo->getClientOriginalName();
-                    $extension = $photo->getClientOriginalExtension();
-                    $fileName = pathinfo($originalFileName, PATHINFO_FILENAME);
-                    $newFileName = $fileName . '.' . $extension;
+                foreach ($request->file('main_photos') as $index => $mainPhoto) {
+                    $extension = $mainPhoto['item']->getClientOriginalExtension();
+                    $mainFileName = $currentTime + $index .'.' . $extension;
                     
-                    $photo->storeAs($path, $newFileName);
+                    $mainPhoto['item']->storeAs($path, $mainFileName);
                 }
             }
             
             $shoe = Shoe::create([
+                'slug' => Str::of($request->name)->lower()->slug('-'),
                 'category_id' => $request->category,
-                'code' => $folderName,
+                'code' => $code,
                 'name' => $request->name,
-                'price' => $request->price ?? 0,
-                'discount_price' => $request->discount_price ?? 0,
-                'description' => $request->description ?? 0,
+                'price' => $request->price,
+                'description' => $request->description,
+                'photo' => $mainFolderName,
             ]);
 
-            if($request->colors && $request->sizes) {
-                foreach($request->colors as $color) {
-                    foreach($request->sizes as $size) {
-                        ShoeVariant::create([
-                            'shoe_id' => $shoe->id,
-                            'size_id' => $size['id'],
-                            'color_id' => $color['id'],
-                            'price' => $request->prices[$color['id']][$size['id']] ?? 0,
-                            'discount_price' => $request->discount_prices[$color['id']][$size['id']] ?? 0,
-                            'stock' => $request->stocks[$color['id']][$size['id']] ?? 0,
-                        ]);
-                    }
-                }
-            }            
-        });
+            foreach($request->colors as $color) {
+                $variantPhoto = $request->file("variant_photos.{$color['id']}");
 
+                $variantFileName = null;
+                
+                if ($variantPhoto) {
+                    $path = 'public/shoes/' . $code;
+                    
+                    $extension = $variantPhoto['item']->getClientOriginalExtension();
+                    $variantFileName = $currentTime + $color['id'] . '.' . $extension;
+                    
+                    $variantPhoto['item']->storeAs($path, $variantFileName);
+                }
+
+                $sizes = Size::all();
+
+                foreach($sizes as $size) {
+                    ShoeVariant::create([
+                        'shoe_id' => $shoe->id,
+                        'size_id' => $size->id,
+                        'color_id' => $color['id'],
+                        'photo' => $variantFileName,
+                        'stock' => $request->stocks[$color['id']][$size['id']],
+                    ]);
+                }
+            }          
+        });
+        
         return redirect()->route('shoes.index');
     }
 
@@ -106,25 +145,23 @@ class ShoeController extends Controller
                             ->select('colors.id', 'colors.name')
                             ->groupBy('colors.id', 'colors.name')
                             ->where('shoe_id', $shoe->id)
-                            ->get();     
+                            ->get();      
         
-        $selectedSizes = DB::table('sizes')
-                            ->join('shoe_variants', 'sizes.id', 'shoe_variants.size_id')
-                            ->select('sizes.id', 'sizes.name')
-                            ->groupBy('sizes.id', 'sizes.name')
-                            ->where('shoe_id', $shoe->id)
-                            ->get();    
-                     
-        $variants = [];                    
-        $prices = [];
-        $discountPrices = [];
+        $path = public_path('storage/shoes/' . $shoe->code . '/main/');
+
+        $files = File::files($path);
+
+        $mainPhotos = [];
+        foreach ($files as $file) {
+            $mainPhotos[] = $file->getFilename();
+        }
+        
         $stocks = [];
         $shoeVariants = ShoeVariant::where('shoe_id', $shoe->id)->get();
+        $variantPhotos = [];
 
-        foreach ($shoeVariants as $shoeVariant) {
-            $variants[$shoeVariant->color_id][$shoeVariant->size_id] = $shoeVariant->id;
-            $prices[$shoeVariant->color_id][$shoeVariant->size_id] = $shoeVariant->price;
-            $discountPrices[$shoeVariant->color_id][$shoeVariant->size_id] = $shoeVariant->discount_price;
+        foreach ($shoeVariants as $index => $shoeVariant) {
+            $variantPhotos[$shoeVariant->color_id] = $shoeVariant->photo;
             $stocks[$shoeVariant->color_id][$shoeVariant->size_id] = $shoeVariant->stock;
         }
         
@@ -134,23 +171,25 @@ class ShoeController extends Controller
             'colors' => $colors,
             'sizes' => $sizes,
             'selectedColors' => $selectedColors,
-            'selectedSizes' => $selectedSizes,
-            'variants' => $variants,
-            'prices' => $prices,
-            'discountPrices' => $discountPrices,
-            'stocks' => $stocks
+            'stocks' => $stocks,
+            'mainPhotos' => $mainPhotos,
+            'variantPhotos' => $variantPhotos
         ]);
     }
 
     public function update(ShoeRequest $request, Shoe $shoe)
     {   
         DB::transaction(function () use($request, $shoe) {
+            $currentTime = time();
+
+            $mainFolderName = $shoe->photo;
+
             $shoe->update([
                 'category_id' => $request->category,
                 'name' => $request->name,
-                'price' => $request->price ?? 0,
-                'discount_price' => $request->discount_price ?? 0,
-                'description' => $request->description ?? 0,
+                'price' => $request->price,
+                'description' => $request->description,
+                'photo' => $mainFolderName
             ]);
 
             $variants = [];
@@ -160,66 +199,85 @@ class ShoeController extends Controller
             foreach ($shoeVariants as $shoeVariant) {
                 $variants[$shoeVariant->color_id][$shoeVariant->size_id] = $shoeVariant;
             }
+            
+            foreach($request->colors as $color) {
+                $variantPhoto = $request->file("variant_photos.{$color['id']}");
 
-            if($request->colors && $request->sizes) {
-                foreach($request->colors as $color) {
-                    foreach($request->sizes as $size) {
-                        if(isset($variants[$color['id']][$size['id']])) {
-                            $variants[$color['id']][$size['id']]->update([
-                                'price' => $request->prices[$color['id']][$size['id']] ?? 0,
-                                'discount_price' => $request->discount_prices[$color['id']][$size['id']] ?? 0,
-                                'stock' => $request->stocks[$color['id']][$size['id']] ?? 0,
-                            ]);
+                $variantFileName = $variants[$color['id']][1]['photo'];
+                
+                if ($variantPhoto) {
+                    $path = 'public/shoes/' . $shoe->code . '/';
+                    
+                    Storage::delete($path . $variantFileName);
+                    
+                    $extension = $variantPhoto['item']->getClientOriginalExtension();
+                    $variantFileName = $currentTime + $color['id'] . '.' . $extension;
+                    
+                    $variantPhoto['item']->storeAs($path, $variantFileName);
+                }
+                
+                $sizes = Size::all();
 
-                            $updatedVariants[] = $variants[$color['id']][$size['id']]->id;
-                        } else{
-                            $shoeVariant = ShoeVariant::create([
-                                'shoe_id' => $shoe->id,
-                                'size_id' => $size['id'],
-                                'color_id' => $color['id'],
-                                'price' => $request->prices[$color['id']][$size['id']] ?? 0,
-                                'discount_price' => $request->discount_prices[$color['id']][$size['id']] ?? 0,
-                                'stock' => $request->stocks[$color['id']][$size['id']] ?? 0,
-                            ]);
+                foreach($sizes as $size) {
+                    if(isset($variants[$color['id']][$size['id']])) {
+                        $variants[$color['id']][$size['id']]->update([
+                            'photo' => $variantFileName,
+                            'stock' => $request->stocks[$color['id']][$size['id']],
+                        ]);
 
-                            $updatedVariants[] = $shoeVariant->id;
-                        }
+                        $updatedVariants[] = $variants[$color['id']][$size['id']]->id;
+                    } else{
+                        $shoeVariant = ShoeVariant::create([
+                            'shoe_id' => $shoe->id,
+                            'size_id' => $size['id'],
+                            'color_id' => $color['id'],
+                            'photo' => $variantFileName,
+                            'stock' => $request->stocks[$color['id']][$size['id']],
+                        ]);
+
+                        $updatedVariants[] = $shoeVariant->id;
                     }
                 }
             }
 
             ShoeVariant::where('shoe_id', $shoe->id)
-            ->whereNotIn('id', $updatedVariants)
-            ->delete();
+                ->whereNotIn('id', $updatedVariants)
+                ->delete();
         });
 
         return redirect()->back();
     }
 
-    public function updatePhoto(Request $request)
-    {        
-        if ($request->hasFile('photos')) {
-            $path = 'public/shoes/' . $request->code;
-            
-            Storage::delete($path);
-            
-            $photos = $request->file('photos');
-            
-            foreach ($photos as $photo) {
-                $originalFileName = $photo->getClientOriginalName();
-                $extension = $photo->getClientOriginalExtension();
-                $fileName = pathinfo($originalFileName, PATHINFO_FILENAME);
-                $newFileName = $fileName . '.' . $extension;
-                
-                $photo->storeAs($path, $newFileName);
-            }
+    public function updateDiscount(Request $request)
+    {
+        $request->validate([
+            'shoe_id' => 'required',
+            'discount_price' => 'required',
+            'discount' => 'required',
+            'is_discount' => 'required',
+        ]);
+
+        foreach ($request->shoe_id as $i => $shoe_id) {
+            $shoe = Shoe::find($shoe_id);
+
+            $shoe->update([
+                'discount_price' => $request->discount_price[$i],
+                'discount' => $request->discount[$i],
+                'is_discount' => $request->is_discount[$i],
+            ]);
         }
-        
+
         return redirect()->back();
     }
 
     public function destroy(Shoe $shoe)
     {
-        //
+        $path = 'public/shoes/' . $shoe->code;
+        
+        Storage::deleteDirectory($path);
+
+        $shoe->delete();
+
+        return redirect()->back();
     }
 }
