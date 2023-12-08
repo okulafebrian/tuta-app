@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddressRequest;
+use App\Http\Resources\AddressResource;
 use App\Models\Address;
-use App\Models\City;
-use App\Models\Province;
-use App\Models\UserAddress;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class AddressController extends Controller
 {
@@ -17,48 +14,30 @@ class AddressController extends Controller
         $this->middleware(['user.auth', 'verified.phone']);
     }
     
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $addresses = Address::with('district', 'city')
-                        ->where('user_id', auth()->user()->id)->get();
-        
         return inertia('Addresses/Index', [
-            'addresses' => $addresses
+            'addresses' => AddressResource::collection(auth()->user()->addresses),
+            'mainAddress' => AddressResource::make(auth()->user()->mainAddress)
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(AddressRequest $request)
     {        
-        if (preg_match('/^62/', $request->phone)) {
-            $phone = '+62' . substr($request->phone, 2);
-        } elseif (preg_match('/^0/', $request->phone)) {
-            $phone = '+62' . substr($request->phone, 1);
-        } else {
-            $phone = '+62' . $request->phone;
-        }
+        if ($request->is_main) {
+            $mainAddress = auth()->user()->mainAddress;
 
-        $mainAddress = Address::where('user_id', auth()->user()->id)
-                        ->where('is_main', 1)
-                        ->first();
+            if ($mainAddress) {
+                $mainAddress->update([
+                    'is_main' => 0
+                ]);
+            }
+        }
         
         Address::create([
             'user_id' => auth()->user()->id,
             'name' => $request->name,
-            'phone' => $phone,
+            'phone_number' => formatPhoneNumber($request->phone_number),
             'province_id' => $request->province_id,
             'city_id' => $request->city_id,
             'district_id' => $request->district_id,
@@ -67,46 +46,15 @@ class AddressController extends Controller
             'is_main' => $request->is_main
         ]);
 
-        if ($mainAddress) {
-            $mainAddress->update(['is_main' => 0]);
-        }
-
-        return redirect()->back();
+        return back()->with(['success' => 'Alamat berhasil ditambahkan.']);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Address $address)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Address $address)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(AddressRequest $request, Address $address)
-    {
-        if (preg_match('/^62/', $request->phone)) {
-            $phone = '+62' . substr($request->phone, 2);
-        } elseif (preg_match('/^0/', $request->phone)) {
-            $phone = '+62' . substr($request->phone, 1);
-        } else {
-            $phone = '+62' . $request->phone;
-        }
-        
+    { 
         $address->update([
             'user_id' => auth()->user()->id,
             'name' => $request->name,
-            'phone' => $phone,
+            'phone_number' => formatPhoneNumber($request->phone_number),
             'province_id' => $request->province_id,
             'city_id' => $request->city_id,
             'district_id' => $request->district_id,
@@ -114,31 +62,32 @@ class AddressController extends Controller
             'detail' => $request->detail,
         ]);
         
-        return redirect()->back();
+        return back()->with(['success' => 'Alamat lengkap berhasil disimpan.']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function updateMain(Address $address)
+    {
+        $currentMainAddress = auth()->user()->mainAddress;        
+        
+        $currentMainAddress->update([
+            'is_main' => 0
+        ]);
+
+        $address->update([
+            'is_main' => 1
+        ]);
+
+        return back()->with(['success' => 'Alamat utama berhasil disimpan.']);
+    }
+
     public function destroy(Address $address)
     {
-        $address->delete();
-
-        return redirect()->back();
-    }
-
-    public function setMain(Address $address)
-    {
-        $mainAddress = Address::where('user_id', auth()->user()->id)
-                        ->where('is_main', 1)
-                        ->first();
-            
-        $address->update(['is_main' => 1]);
-
-        if ($mainAddress) {
-            $mainAddress->update(['is_main' => 0]);
+        if ($address->is_main) {
+            return back()->with(['error' => 'Alamat utama tidak bisa dihapus.']);
         }
 
-        return redirect()->back();
+        $address->delete();
+
+        return back()->with(['success' => 'Alamat berhasil dihapus.']);
     }
 }

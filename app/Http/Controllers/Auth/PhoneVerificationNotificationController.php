@@ -12,14 +12,8 @@ class PhoneVerificationNotificationController extends Controller
     /**
      * Send a new phone verification notification.
      */
-    public function store(Request $request): RedirectResponse
-    {
-        if ($request->user()->hasVerifiedPhone()) {
-            return redirect()->intended(RouteServiceProvider::HOME);
-        }
-
-        $request->user()->sendPhoneVerificationNotification();
-
-        return back()->with('status', 'verification-link-sent');
-    }
+    // public function store(Request $request): RedirectResponse
+    // {
+        
+    // }
 }

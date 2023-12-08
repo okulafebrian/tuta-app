@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderDetail extends Model
@@ -21,18 +22,8 @@ class OrderDetail extends Model
         return $this->belongsTo(Order::class);
     }
     
-    public function shoe(): BelongsTo
+    public function productVariant(): BelongsTo
     {
-        return $this->belongsTo(Shoe::class);
-    }
-    
-    public function getOrder()
-    {
-        return $this->order;
-    }
-    
-    public function getShoe()
-    {
-        return $this->shoe;
+        return $this->belongsTo(ProductVariant::class);
     }
 }

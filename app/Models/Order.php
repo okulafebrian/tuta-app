@@ -15,12 +15,13 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
     
-    const PAYMENT_PENDING = 0;
-    const PAYMENT_SUCCESS = 1;
-    const ORDER_CANCELED = 2;
-    const ORDER_ACCEPTED = 3;
+    const PAYMENT_PENDING = 1;
+    const PAYMENT_SUCCESS = 2;
+    const SHIPPING_ARRANGED = 3;
     const ORDER_SHIPPED = 4;
     const ORDER_COMPLETED = 5;
+    const ORDER_CANCELLED = 6;
+    const PAYMENT_EXPIRED = 7;
     
     protected $table = 'orders';
     protected $primaryKey = 'id';
@@ -28,42 +29,37 @@ class Order extends Model
     protected $guarded = [];
     protected $appends = ['formatted_created_at', 'formatted_expired_at', 'expiredDueTime'];
     protected $casts = [
-        'accepted_at' => 'datetime',
         'paid_at' => 'datetime',
         'shipped_at' => 'datetime',
         'completed_at' => 'datetime',
         'expired_at' => 'datetime',
-        'canceled_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
-    public static function orderID()
-    {
-        $lastOrder = static::orderBy('created_at', 'desc')->first();
-        
-        if ($lastOrder) {
-            $parts = explode('-', $lastOrder->code);
-            $queueNumber = (int) end($parts) + 1;
+    public static function generateCode()
+    {   
+        $date = Carbon::now()->format('dmY');
+        $queueNumber = 1;
 
-            return 'TT-' . $queueNumber;
-        } else {
-            return 'TT-100000';
+        $lastTicket = static::where('code', 'like', "INV-$date-____")
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($lastTicket) {
+            $parts = explode('-', $lastTicket->code);
+            $queueNumber = (int) end($parts) + 1;
         }
+        
+        $queueNumber = str_pad($queueNumber, 4, '0', STR_PAD_LEFT);
+
+        return "INV-$date-$queueNumber";
     }
 
     public function getFormattedCreatedAtAttribute()
     {
-        $now = now();
         $createdAt  = $this->created_at;
 
-        if ($createdAt->isToday()) {
-            return 'Hari ini ' . $createdAt->format('H:i');
-        } elseif ($createdAt->isYesterday()) {
-            return 'Kemarin ' . $createdAt->format('H:i');
-        } elseif ($createdAt->year === $now->year) {
-            return $createdAt->format('d M H:i');
-        } else {
-            return $createdAt->format('d/m/y H:i');
-        }
+        return $createdAt->format('d F Y');
     }
 
     public function getFormattedExpiredAtAttribute()
@@ -104,15 +100,15 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
-    
-    public function getOrderDetails()
-    {
-        return $this->orderDetails;
-    }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function province(): BelongsTo
+    {
+        return $this->belongsTo(Province::class);
     }
 
     public function city(): BelongsTo
@@ -130,8 +126,12 @@ class Order extends Model
         return $this->belongsTo(ZipCode::class);
     }
 
-    public function shipping(): HasOne
+    public function shippings(): HasMany
     {
-        return $this->hasOne(Shipping::class);
+        return $this->hasMany(Shipping::class);
+    }
+
+    public function latestShipping() {
+        return $this->shippings()->latest('created_at')->first();
     }
 }

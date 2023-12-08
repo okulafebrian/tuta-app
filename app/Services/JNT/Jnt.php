@@ -33,7 +33,7 @@ class Jnt
     }
     
     /**
-     * @param $orderId
+     * @param $orderData
      * @return array|mixed
      */
     public function createOrder($orderData)
@@ -61,20 +61,18 @@ class Jnt
             'orderdate' => Carbon::now()->format('Y-m-d H:i:s'),
             'item_name' => 'Sepatu',
             'cod' => '',
-            'sendstarttime' => Carbon::now()->format('Y-m-d H:i:s'),
-            'sendendtime' => Carbon::now()->format('Y-m-d H:i:s'),
+            'sendstarttime' => $orderData['sendstarttime'],
+            'sendendtime' => $orderData['sendendtime'],
             'expresstype' => '1',
             'goodsvalue' => $orderData['goodsvalue'],
         ];
         
         $dataJson = json_encode(['detail' => array($data)]);
-        dd($dataJson);
+        
         $dataRequest = [
             'data_param' => $dataJson,
             'data_sign' => base64_encode(md5($dataJson . $this->order_key))
         ];
-
-        dd(json_encode(Http::asForm()->post($this->order_url, $dataRequest)->json()));
         
         return Http::asForm()->post($this->order_url, $dataRequest)->json();
     }
@@ -91,17 +89,17 @@ class Jnt
             'weight' => $weight,
             'sendSiteCode' => $sendSiteCode,
             'destAreaCode' => $destAreaCode,
-            'cusName' => 'TUTA',
+            'cusName' => 'TUTAMANDIRIINDO',
             'productType' => 'EZ'
         ];
         
         $dataJson = json_encode($data);
-        // dd($dataJson);
+        
         $dataRequest = [
             'data' => $dataJson,
             'sign' => base64_encode(md5($dataJson . $this->tariff_check_key))
         ];
-        // dd(json_encode(Http::asForm()->post($this->tariff_check_url, $dataRequest)->json()));
+        
         return Http::asForm()->post($this->tariff_check_url, $dataRequest)->json();
     }
     
@@ -129,7 +127,7 @@ class Jnt
             'username' => $this->username,
             'api_key' => $this->api_key,
             'orderid' => $orderId,
-            'remark' => 'Cancel by e-commerce'
+            'remark' => 'Cancelled by TUTA'
         ];
         
         $dataJson = json_encode(['detail' => array($data)]);

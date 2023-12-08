@@ -40,7 +40,7 @@ class ExpiredOrder implements ShouldQueue
         if ($exists) {
             Order::where('code', $this->code)
                 ->update([
-                    'status' => Order::ORDER_CANCELED,
+                    'status' => Order::PAYMENT_EXPIRED,
                     'expired_at' => Carbon::now()
                 ]);
         }

@@ -14,6 +14,11 @@ class Address extends Model
     protected $timestamp = true;
     protected $guarded = [];
 
+    public function province(): BelongsTo
+    {
+        return $this->belongsTo(Province::class);
+    }
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);

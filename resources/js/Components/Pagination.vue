@@ -1,14 +1,14 @@
 <template>
-    <div class="flex items-center bg-white shadow-sm w-fit rounded-md">
+    <div class="flex gap-2">
         <Component :is="link.url ? 'Link' : 'span'" v-for="(link, index) in links" :href="link.url" :key="link.label"
-            class="w-4 h-8 mx-2 flex items-center justify-center text-sm font-semibold"
-            :class="[link.url ? 'text-gray-600' : 'text-gray-300', { 'text-lime-600 border-b-2 border-lime-600': link.active }]">
+            class="p-1 flex items-center justify-center text-sm font-semibold text-gray-400"
+            :class="[{ 'cursor-not-allowed': !link.url }, { 'text-lime-600': link.active }]">
 
-            <div v-if="index == 0" class="p-3">
-                <ChevronLeftIcon class="w-3 h-3 stroke-[3px]" />
+            <div v-if="index == 0" class="p-1">
+                <ChevronLeftIcon class="w-4 h-4 stroke-2" />
             </div>
-            <div v-else-if="index == links.length - 1" class="p-3">
-                <ChevronRightIcon class="w-3 h-3 stroke-[3px]" />
+            <div v-else-if="index == links.length - 1" class="p-1">
+                <ChevronRightIcon class="w-4 h-4 stroke-2" />
             </div>
             <div v-else>{{ link.label }}</div>
 

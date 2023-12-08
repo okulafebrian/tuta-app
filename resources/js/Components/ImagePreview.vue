@@ -1,32 +1,35 @@
 <template>
-    <div class="relative h-24 w-24 border border-solid border-gray-200 rounded-md overflow-hidden hover:brightness-95"
-        @mouseover="showButton = true" @mouseout="showButton = false">
-        <img :src="source">
+    <div class="relative w-full border border-solid border-gray-200 rounded overflow-hidden"
+        @mouseover="showButton = true; addBrightness()" @mouseout="showButton = false; removeBrightness()">
+        <img :src="source" :class="brightness">
         <button v-show="showButton" @click="removePhoto"
-            class="absolute bottom-0 right-0 bg-white text-zinc-500 rounded-md m-2 p-1">
-            <TrashIcon class="w-5 h-5" />
+            class="absolute inset-x-0 bottom-0 bg-white hover:bg-gray-100 font-semibold text-xs rounded shadow m-2 py-1">
+            Hapus
         </button>
     </div>
 </template>
 
 <script>
-import { TrashIcon } from '@heroicons/vue/20/solid'
 
 export default {
     data() {
         return {
             showButton: false,
+            brightness: ''
         }
     },
     props: {
         source: String
     },
-    components: {
-        TrashIcon
-    },
     methods: {
         removePhoto() {
             this.$emit('removePhoto')
+        },
+        addBrightness() {
+            this.brightness = 'brightness-75'
+        },
+        removeBrightness() {
+            this.brightness = ''
         }
     }
 }

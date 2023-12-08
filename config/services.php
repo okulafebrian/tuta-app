@@ -51,6 +51,10 @@ return [
         'track_url' => env('JNT_TRACK_URL'),
         'cancel_key' => env('JNT_CANCEL_KEY'),
         'cancel_url' => env('JNT_CANCEL_URL'),
+    ],
+
+    'whatsapp' => [
+        'api_key' => env('WA_API_KEY'),
     ]
 
 ];

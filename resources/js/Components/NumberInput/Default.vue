@@ -1,12 +1,12 @@
 <template>
     <div class="flex items-center border rounded-lg">
-        <button @click="decrement" type="button" class="p-2 m-1"
-            :class="count === 1 ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600 hover:bg-slate-100 rounded-md'">
+        <button @click="decrement" type="button" class="p-1.5 m-1"
+            :class="count === 1 ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600 hover:bg-gray-100 rounded-md'">
             <MinusIcon class="w-4 h-4" style="stroke-width: 3;" />
         </button>
-        <div class="text-center w-10">{{ count }}</div>
-        <button @click="increment" type="button" class="p-2 m-1"
-            :class="count === max ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600 hover:bg-slate-100 rounded-md'">
+        <div class="text-sm text-center w-10">{{ count }}</div>
+        <button @click="increment" type="button" class="p-1.5 m-1"
+            :class="count === max ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600 hover:bg-gray-100 rounded-md'">
             <PlusIcon class="w-4 h-4" style="stroke-width: 3;" />
         </button>
     </div>

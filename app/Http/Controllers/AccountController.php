@@ -5,66 +5,51 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+
 class AccountController extends Controller
 {
     public function __construct()
     {
         $this->middleware(['user.auth', 'verified.phone']);
+        $this->middleware('restriction.phone')->only('updatePhone');
     }
     
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return inertia('Account/Index');
+        return inertia('Account');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function updateName(Request $request, User $user)
     {
-        //
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+        ]);
+
+        return back()->with(['success' => 'Nama lengkap berhasil disimpan.']);;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function updatePhone(Request $request, User $user)
     {
-        //
-    }
+        $request->validate([
+            'phone_number' => 'required'
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
+        if ($user->phone_number == $request->phone_number) {
+            return back();
+        }
+        
+        $user->update([
+            'phone_number' => formatPhoneNumber($request->phone_number),
+            'phone_last_update_date' => now(),
+            'phone_verified_at' => null
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
+        $user->sendPhoneVerificationNotification(true);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+        return redirect()->route('verification-phone.notice');
     }
 }

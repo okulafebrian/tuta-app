@@ -30,7 +30,7 @@ class PaymentNotification extends FormRequest
                 'required', Rule::in(['capture', 'settlement', 'pending', 'deny', 'cancel', 'expire', 'refund'])
             ],
             "merchant_id" => ['required', Rule::in([config('services.midtrans.merchant_id')])],
-            "order_id" => 'required|exists:transactions,code',
+            "order_id" => 'required|exists:orders,code',
             'signature_key' => ['required', 'string', new MidtransSignature($this->all())],
             'gross_amount' => ['required', new GrossAmount($this->all())],
         ];

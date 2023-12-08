@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('shippings', function (Blueprint $table) {
             $table->id();
-            $table->string('awb_no')->index()->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')->references('id')->on('orders');
+            $table->string('code')->unique();
+            $table->string('awb_no')->index();
+            $table->timestamp('send_start_time');
+            $table->timestamp('send_end_time');
             $table->timestamps();
             $table->softDeletes();
         });

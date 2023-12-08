@@ -17,24 +17,19 @@ class CategorySeeder extends Seeder
             [
                 'name' => 'Sneakers',
                 'slug' => 'sneakers',
-                'photo' => 'sneakers.webp'
             ],
             [
                 'name' => 'Sandal',
                 'slug' => 'sandal',
-                'photo' => 'sandal.webp'
             ],
             [   'name' => 'Sepatu Oxford',
                 'slug' => 'sepatu-oxford',
-                'photo' => 'sepatu-oxford.webp'
             ],
             [   'name' => 'Boots',
                 'slug' => 'boots',
-                'photo' => 'boots.webp'
             ],
             [   'name' => 'Sepatu Flat',
                 'slug' => 'sepatu-flat',
-                'photo' => 'sepatu-flat.webp'
             ]
         ]);
     }

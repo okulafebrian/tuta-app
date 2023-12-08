@@ -1,6 +1,6 @@
 <template>
     <div class="px-4 lg:px-20 py-10">
-        <div v-if="status == 1">
+        <div v-if="status == 2">
             <div class="text-center mb-6">
                 <CheckBadgeIcon class="text-lime-600 w-20 h-20 inline-block mb-6" />
                 <div class="text-3xl font-semibold mb-2">Pesananmu Berhasil Dibuat</div>
@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div v-if="status == 0">
+        <div v-if="status == 1">
             <div class="text-center mb-6">
                 <ClockIcon class="text-lime-600 w-20 h-20 inline-block mb-6" />
                 <div class="text-3xl font-semibold mb-2">Menunggu Pembayaran</div>
@@ -26,17 +26,18 @@
             </div>
 
             <div class="flex justify-center gap-3">
-                <Link :href="route('home')" class="bg-lime-600 px-6 py-2.5 rounded-lg font-medium text-white text-center">
-                Lanjut ke Pembayaran
-                </Link>
-                <Link :href="route('orders')"
+                <Link :href="route('shop')"
                     class="border border-lime-600 px-6 py-2.5 rounded-lg font-medium text-lime-600 text-center">
-                Batalkan pesanan
+                Belanja Lagi
                 </Link>
+                <a :href="order.redirect_url" target="_blank"
+                    class="bg-lime-600 px-6 py-2.5 rounded-lg font-medium text-white text-center">
+                    Lanjut ke Pembayaran
+                </a>
             </div>
         </div>
 
-        <!-- <div v-if="status === 'error'">
+        <div v-if="status == 6">
             <div class="text-center mb-6">
                 <XCircleIcon class="text-lime-600 w-20 h-20 inline-block mb-6" />
                 <div class="text-3xl font-semibold mb-2">Pesananmu Gagal Dibuat</div>
@@ -52,7 +53,7 @@
                 Pesanan Saya
                 </Link>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 
@@ -65,7 +66,8 @@ export default {
         CheckBadgeIcon, ClockIcon, XCircleIcon
     },
     props: {
-        status: Number
+        status: Number,
+        order: Object
     },
     layout: UserLayout
 }

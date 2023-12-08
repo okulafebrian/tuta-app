@@ -1,30 +1,30 @@
 <template>
     <Head :title="category.name" />
 
-    <div class="px-4 xl:px-16 pt-6 xl:pt-10">
-        <div class="text-xl xl:text-2xl font-semibold mb-6">
-            {{ category.name }} ({{ shoes.length }})
+    <div class="px-4 xl:px-16 py-10">
+        <div class="text-xl font-bold mb-6">
+            {{ category.name }} ({{ products.length }})
         </div>
 
-        <div class="grid grid-cols-2 xl:grid-cols-5 gap-x-4 gap-y-8">
-            <div v-for="shoe in shoes">
-                <ShoeCard :shoe="shoe" :category="category" />
+        <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            <div v-for="product in products">
+                <ProductCard :product="product" />
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import ShoeCard from "@/Components/ShoeCard.vue"
+import ProductCard from "@/Components/ProductCard.vue"
 import UserLayout from "@/Layouts/UserLayout.vue";
 
 export default {
     components: {
-        ShoeCard
+        ProductCard
     },
     props: {
-        category: Object,
-        shoes: Object,
+        products: Object,
+        category: Object
     },
     layout: UserLayout
 }

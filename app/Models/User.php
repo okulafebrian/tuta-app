@@ -19,9 +19,13 @@ class User extends Authenticatable implements IMustVerifyPhone
     protected $fillable = [
         'role_id',
         'name',
-        'phone',
+        'phone_number',
         'email',
         'password',
+        'phone_last_attempt_date',
+        'phone_verify_code_sent_at',
+        'phone_verified_at',
+        'phone_last_update_date'
     ];
 
     protected $hidden = [
@@ -32,6 +36,9 @@ class User extends Authenticatable implements IMustVerifyPhone
     protected $casts = [
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
+        'phone_verify_code_sent_at' => 'datetime',
+        'phone_last_attempt_date' => 'datetime',
+        'phone_last_update_date' => 'datetime',
         'password' => 'hashed',
     ];
 

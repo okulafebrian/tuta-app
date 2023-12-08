@@ -1,31 +1,20 @@
 <template>
-    <div class="h-screen flex">
-        <Sidebar />
+    <div class="h-screen flex flex-col">
+        <Navbar />
 
-        <div class="flex-grow h-full w-[85%]">
+        <div class="relative flex-grow bg-slate-100">
             <slot />
         </div>
     </div>
 </template>
 
 <script>
-import Sidebar from '@/Components/Sidebar/Admin.vue';
-import { CheckCircleIcon } from '@heroicons/vue/20/solid';
+import Navbar from '@/Components/Navbar/Admin.vue'
 
 export default {
-    data() {
-        return {
-            isOpen: false
-        }
-    },
     components: {
-        Sidebar, CheckCircleIcon
+        Navbar
     },
-    createad() {
-        return {
-            message: this.$page.props.flash.message
-        }
-    }
 }
 
 </script>

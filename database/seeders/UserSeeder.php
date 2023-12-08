@@ -17,22 +17,20 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'role_id' => '2',
-                'first_name' => 'TUTA SUPERADMIN',
-                'last_name' => null,
-                'email' => 'tutamandiriindonesia@gmail.com',
-                'phone' => null,
+                'name' => 'Shop Admin',
+                'email' => 'shop@tuta.co.id',
+                'phone_number' => null,
                 'phone_verified_at' => null,
                 'password' => Hash::make('abc123')
             ],
             [
-                'role_id' => '1',
-                'first_name' => 'Vincent',
-                'last_name' => 'Febrien',
-                'email' => null,
-                'phone' => '+6285156028260',
-                'phone_verified_at' => now(),
-                'password' => null
-            ],
+                'role_id' => '3',
+                'name' => 'IT Admin',
+                'email' => 'it@tuta.co.id',
+                'phone_number' => null,
+                'phone_verified_at' => null,
+                'password' => Hash::make('abc123')
+            ]
         ]);
     }
 }

@@ -19,8 +19,8 @@ class Cart extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function shoeVariant(): BelongsTo
+    public function productVariant(): BelongsTo
     {
-        return $this->belongsTo(ShoeVariant::class);
+        return $this->belongsTo(ProductVariant::class);
     }
 }

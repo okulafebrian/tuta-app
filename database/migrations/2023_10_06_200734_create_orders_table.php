@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('code')->index();
-            $table->boolean('cod');
             $table->integer('total_price');
             $table->integer('shipping_fee');
             $table->integer('total_payment');
             $table->integer('total_quantity');
+            $table->string('payment_type')->nullable();
             $table->integer('status');
             $table->string('payment_token')->nullable();
             $table->string('redirect_url')->nullable();
@@ -35,12 +35,11 @@ return new class extends Migration
             $table->foreign('district_id')->references('id')->on('districts')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('zip_code_id');
             $table->foreign('zip_code_id')->references('id')->on('zip_codes')->onUpdate('cascade')->onDelete('cascade');
-            $table->timestamp('accepted_at')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('shipped_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('expired_at')->nullable();
-            $table->timestamp('canceled_at')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

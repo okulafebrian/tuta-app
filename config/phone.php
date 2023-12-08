@@ -12,7 +12,19 @@ return [
     |
     */
 
-    'max_attempts' => env('PHONE_MAX_ATTEMPTS', 3)?:0,
+    'max_attempts' => env('PHONE_MAX_ATTEMPTS', 5)?:0,
+
+    /*
+    |--------------------------------------------------------------------------
+    | OTP max requests
+    |--------------------------------------------------------------------------
+    |
+    | Max requests to get OTP code.
+    | Set 0 for not use this feature.
+    |
+    */
+
+    'max_requests' => env('OTP_MAX_REQUESTS', 5)?:0,
 
     /*
     |--------------------------------------------------------------------------
@@ -31,10 +43,21 @@ return [
     | Phone attempts ban seconds
     |--------------------------------------------------------------------------
     |
-    | Seconds of ban when no attempts left (default 10 minutes).
+    | Seconds of ban when no attempts left (default 5 hours).
     |
     */
 
-    'attempts_ban_seconds' => env('PHONE_ATTEMPTS_BAN_SEOCNDS', 600)?:0,
+    'attempts_ban_seconds' => env('PHONE_ATTEMPTS_BAN_SEOCNDS', 18000)?:0,
+
+    /*
+    |--------------------------------------------------------------------------
+    | OTP requests ban seconds
+    |--------------------------------------------------------------------------
+    |
+    | Seconds of ban when no requests left (default 5 hours).
+    |
+    */
+
+    'requests_ban_seconds' => env('OTP_REQUESTS_BAN_SEOCNDS', 18000)?:0,
 
 ];

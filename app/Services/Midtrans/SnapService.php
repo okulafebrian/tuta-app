@@ -48,12 +48,12 @@ class SnapService extends Midtrans
                 'secure' => true
             ],
             'callbacks' => [
-                'finish' => config('app.url')
+                'finish' => config('app.url') . '/orders/confirmation'
             ],
             'expiry' => [
                 'start_time' => Carbon::now()->format('Y-m-d H:i:s O'),
                 'unit' => 'minutes',
-                'duration' => 60
+                'duration' => 1
             ]
         ];
         

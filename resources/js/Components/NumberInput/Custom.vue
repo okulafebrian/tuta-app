@@ -1,15 +1,15 @@
 <template>
     <div class="flex items-center border rounded-lg">
-        <button v-if="form.quantity > 1" @click="decrement" type="button" class="p-3"
-            :class="form.quantity === 1 ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600'">
+        <button v-if="form.quantity > 1" @click="decrement" type="button" class="p-1.5 m-1"
+            :class="form.quantity == 1 ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600 hover:bg-gray-100 rounded-md'">
             <MinusIcon class="w-4 h-4" style="stroke-width: 3;" />
         </button>
-        <button v-else @click="remove" type="button" class="p-3 text-lime-600">
+        <button v-else @click="remove" type="button" class="p-1.5 m-1 text-lime-600 hover:bg-gray-100 rounded-md">
             <TrashIcon class="w-4 h-4 stroke-2" />
         </button>
         <div class="text-center w-10">{{ form.quantity }}</div>
-        <button @click="increment" type="button" class="p-3"
-            :class="form.quantity === max ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600'">
+        <button @click="increment" type="button" class="p-1.5 m-1"
+            :class="form.quantity == max ? 'text-slate-400 cursor-not-allowed' : 'text-lime-600 hover:bg-gray-100 rounded-md'">
             <PlusIcon class="w-4 h-4" style="stroke-width: 3;" />
         </button>
     </div>

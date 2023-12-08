@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\DBTransaction;
 use App\Http\Middleware\EnsurePhoneIsVerified;
+use App\Http\Middleware\PhoneChangeRestriction;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -70,6 +71,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'verified.phone' => EnsurePhoneIsVerified::class,
+        'restriction.phone' => PhoneChangeRestriction::class,
         'DBTransaction' => DBTransaction::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'user' => \App\Http\Middleware\User::class,

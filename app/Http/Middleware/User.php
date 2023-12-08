@@ -16,7 +16,7 @@ class User
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->user()->role_id != 1) {
-            return redirect()->back()->with('error', 'Not authorized!');
+            return back()->with('error', 'Not authorized!');
         }
 
         return $next($request);

@@ -1,38 +1,37 @@
 <template>
     <Head title="Daftar Pesanan" />
 
-    <div class="h-full px-10 pt-8 pb-16 bg-gray-100 overflow-y-auto">
+    <Notif v-if="flash.error || flash.success" :flash="flash" />
+
+    <Sidebar />
+
+    <div class="w-[85%] ms-auto px-10 pt-6 pb-12">
         <div class="text-xl font-semibold mb-6">Daftar Pesanan</div>
 
-        <div class="flex text-sm font-medium bg-white shadow-sm rounded-md overflow-hidden mb-6">
+        <div class="flex text-sm font-medium bg-white shadow rounded overflow-hidden px-4 mb-6">
             <Link :href="route('orders.manage')" class="relative p-4"
-                :class="$page.url === '/orders/manage' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-400'">
-            Semua Pesanan
+                :class="$page.url === '/orders/manage' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-500'">
+            Semua
             </Link>
 
-            <Link :href="route('orders.manage', { status: 'baru' })" class="relative p-4"
-                :class="$page.url === '/orders/manage?status=baru' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-400'">
-            Pesanan Baru
+            <Link :href="route('orders.manage', { status: 'perlu_dikirim' })" class="relative p-4"
+                :class="$page.url === '/orders/manage?status=perlu_dikirim' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-500'">
+            Perlu Dikirim
             </Link>
 
-            <Link :href="route('orders.manage', { status: 'siap_dikirim' })" class="relative p-4"
-                :class="$page.url === '/orders/manage?status=siap_dikirim' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-400'">
-            Siap Dikirim
-            </Link>
-
-            <Link :href="route('orders.manage', { status: 'dalam_pengiriman' })" class="relative p-4"
-                :class="$page.url === '/orders/manage?status=dalam_pengiriman' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-400'">
-            Dalam Pengiriman
+            <Link :href="route('orders.manage', { status: 'dikirim' })" class="relative p-4"
+                :class="$page.url === '/orders/manage?status=dikirim' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-500'">
+            Dikirim
             </Link>
 
             <Link :href="route('orders.manage', { status: 'selesai' })" class="relative p-4"
-                :class="$page.url === '/orders/manage?status=selesai' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-400'">
-            Pesanan Selesai
+                :class="$page.url === '/orders/manage?status=selesai' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-500'">
+            Selesai
             </Link>
 
-            <Link :href="route('orders.manage', { status: 'dibatalkan' })" class="relative p-4"
-                :class="$page.url === '/orders/manage?status=dibatalkan' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-400'">
-            Dibatalkan
+            <Link :href="route('orders.manage', { status: 'pembatalan' })" class="relative p-4"
+                :class="$page.url === '/orders/manage?status=pembatalan' ? 'text-lime-600 after:bottom-0 after:left-0 after:border-b-[3px] after:absolute after:w-full after:border-lime-600' : 'text-gray-500'">
+            Pembatalan
             </Link>
         </div>
 
@@ -52,14 +51,17 @@
 import OrderCard from '@/Components/OrderCard.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import Sidebar from '@/Components/Sidebar/Admin.vue'
 
 export default {
     components: {
         TabGroup, TabList, Tab, TabPanels, TabPanel,
-        OrderCard
+        OrderCard,
+        Sidebar
     },
     props: {
-        orders: Object
+        orders: Object,
+        flash: Object
     },
     layout: AdminLayout
 }

@@ -30,7 +30,7 @@ class GrossAmount implements ValidationRule
     {
         $order = Order::where('code', $this->input['order_id'])->firstOrFail();
 
-        if ((int) $order->total_price != (int) $value) {
+        if ((int) $order->total_payment != (int) $value) {
             $fail('The :attribute not match.');
         }
     }

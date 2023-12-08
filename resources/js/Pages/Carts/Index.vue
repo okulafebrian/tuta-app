@@ -1,38 +1,35 @@
 <template>
     <Head title="Keranjang" />
 
-    <div class="px-4 xl:px-16 pt-6 xl:pt-10">
+    <div class="h-full px-4 xl:px-24 py-10">
         <div v-if="carts.length > 0">
-            <div class="text-xl xl:text-2xl font-semibold mb-6">Keranjang</div>
+            <div class="text-xl font-bold mb-6">Keranjang</div>
 
             <div class="flex flex-col xl:flex-row gap-8 xl:gap-10">
-                <div class="flex-1 space-y-5">
-                    <div v-for="(cart, i) in carts" class="flex gap-6 h-fit" :class="{ 'border-t pt-5': i > 0 }">
-                        <div>
-                            <img :src="'/storage/shoes/' + cart.code + '/' + cart.variantPhoto"
-                                class="w-28 border rounded-lg p-2">
-                        </div>
+                <div class="flex-1 divide-y">
+                    <div v-for="(cart, index) in carts" class="flex gap-6 py-6" :class="{ 'pt-0': index == 0 }">
+                        <Link :href="route('shop.product', [cart.product.category, cart.product])">
+                        <img :src="'/storage/products/' + cart.product.code + '/' + cart.photo"
+                            class="w-24 border rounded-lg p-2">
+                        </Link>
                         <div class="flex-1 flex flex-col xl:flex-row justify-between gap-3 xl:gap-6">
-                            <div class="space-y-1 text-sm">
-                                <Link :href="route('shop.shoe', [cart.category_slug, cart.shoe_slug])"
-                                    class="font-medium line-clamp-1">
-                                {{ cart.name }}
+                            <div class="text-sm">
+                                <Link :href="route('shop.product', [cart.product.category, cart.product])"
+                                    class="font-semibold line-clamp-1">
+                                {{ cart.product.name }}
                                 </Link>
-                                <div class="text-slate-600">{{ cart.color }}, {{ cart.size }}</div>
+                                <div class="text-slate-600">{{ cart.color.name }}, {{ cart.size.name }}</div>
                                 <div>
-                                    <div v-if="cart.is_discount" class="flex gap-2">
-                                        <span>Rp{{ cart.discount_price.toLocaleString("id-ID") }}</span>
-                                        <div class="flex gap-1">
-                                            <div
-                                                class="font-semibold bg-rose-100 text-rose-600 rounded-md px-2 py-0.5 text-xs">
-                                                {{ cart.discount }}%
-                                            </div>
-                                            <span class="text-slate-400 line-through">
-                                                Rp{{ cart.price.toLocaleString("id-ID") }}
-                                            </span>
+                                    <div v-if="cart.product.is_discount" class="flex gap-2">
+                                        <div class="text-red-600 font-semibold">
+                                            Rp{{ cart.product.discount_price.toLocaleString("id-ID") }}
+                                        </div>
+                                        <div class="text-slate-400 line-through">
+                                            Rp{{ cart.product.price.toLocaleString("id-ID") }}
                                         </div>
                                     </div>
-                                    <div v-else>Rp{{ cart.price.toLocaleString("id-ID") }}</div>
+                                    <div v-else class="font-semibold">Rp{{ cart.product.price.toLocaleString("id-ID") }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex items-end h-full">
@@ -44,19 +41,17 @@
 
                 <div class="xl:w-1/3">
                     <section class="border rounded-xl p-6">
-                        <div class="text-lg font-semibold">Ringkasan Belanja</div>
-                        <div class="space-y-2 text-slate-600 my-4">
-                            <div class="flex justify-between">
-                                <div>Total Harga</div>
-                                <div>Rp {{ totalPrice.toLocaleString("id-ID") }}</div>
-                            </div>
+                        <div class="font-semibold">Ringkasan Belanja</div>
+                        <div class="flex justify-between text-sm text-slate-600 my-4">
+                            <div>Total Harga</div>
+                            <div>Rp{{ totalPrice.toLocaleString("id-ID") }}</div>
                         </div>
-                        <div class="border-t py-4 mb-4 flex justify-between text-lg font-semibold">
+                        <div class="border-t py-4 mb-4 flex justify-between font-semibold">
                             <div>Total Belanja</div>
-                            <div>Rp {{ totalPrice.toLocaleString("id-ID") }}</div>
+                            <div>Rp{{ totalPrice.toLocaleString("id-ID") }}</div>
                         </div>
                         <Link :href="route('checkout')"
-                            class="block bg-lime-600 hover:bg-lime-700 py-3 w-full rounded-full font-medium text-white text-center xl:text-lg">
+                            class="block bg-lime-600 hover:bg-lime-700 py-3 w-full rounded-full font-semibold text-white text-center">
                         Beli
                         </Link>
                     </section>
@@ -64,22 +59,24 @@
             </div>
         </div>
 
-        <div v-else class="text-center py-10">
-            <div class="flex justify-center mb-6">
-                <div class="bg-lime-100 rounded-full p-6">
-                    <Cart class="h-24 w-24" />
+        <div v-else class="h-full flex items-center justify-center">
+            <div class="text-center">
+                <div class="flex justify-center mb-8">
+                    <div class="bg-lime-100 rounded-full p-6">
+                        <Cart class="h-16 w-16 xl:h-20 xl:w-20" />
+                    </div>
                 </div>
-            </div>
 
-            <div class=" mb-8">
-                <div class="text-2xl font-semibold mb-2">Keranjang Belanjamu Kosong</div>
-                <div class="text-slate-500">Yuk, cari sepatu wanita favoritmu di sini</div>
-            </div>
+                <div class="mb-8">
+                    <div class="text-xl xl:text-2xl font-bold mb-2">Keranjang Belanjamu Kosong</div>
+                    <div class="text-sm xl:text-base">Yuk, cari sepatu wanita favoritmu di sini</div>
+                </div>
 
-            <Link :href="route('shop')"
-                class="text-white font-medium bg-lime-600 hover:bg-lime-700 px-10 py-3 text-lg rounded-full">
-            Belanja Sekarang
-            </Link>
+                <Link :href="route('shop')"
+                    class="text-white font-semibold bg-lime-600 hover:bg-lime-700 px-8 py-3 rounded-full">
+                Belanja Sekarang
+                </Link>
+            </div>
         </div>
     </div>
 </template>
@@ -98,8 +95,7 @@ export default {
     },
     props: {
         carts: Object,
-        totalPrice: Number,
-        provinces: Object,
+        totalPrice: Number
     },
     components: {
         NumberInput, TrashIcon, Cart
