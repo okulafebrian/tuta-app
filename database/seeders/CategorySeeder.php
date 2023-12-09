@@ -16,20 +16,20 @@ class CategorySeeder extends Seeder
         DB::table('categories')->insert([
             [
                 'name' => 'Sneakers',
-                'photo' => 'Sneakers.jpeg'
+                'slug' => 'sneakers',
             ],
             [
                 'name' => 'Sandal',
-                'photo' => 'Sandal.jpeg'
+                'slug' => 'sandal',
             ],
             [   'name' => 'Sepatu Oxford',
-                'photo' => 'Sepatu Oxford.jpeg'
+                'slug' => 'sepatu-oxford',
             ],
             [   'name' => 'Boots',
-                'photo' => 'Boots.jpeg'
+                'slug' => 'boots',
             ],
-            [   'name' => 'Sepatu Flat', 
-                'photo' => 'Sepatu Flat.jpeg'
+            [   'name' => 'Sepatu Flat',
+                'slug' => 'sepatu-flat',
             ]
         ]);
     }

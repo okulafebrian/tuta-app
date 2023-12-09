@@ -1,1 +1,0 @@
-import{_ as s}from"./AuthenticatedLayout-f2c796b7.js";import{o as t,f as o,a,u as r,w as n,F as c,Z as l,b as e}from"./app-541a671a.js";const _=e("div",{class:"py-10"},[e("h2",{class:"text-xl font-semibold"},"Dashboard")],-1),p={__name:"Admin",setup(m){return(d,i)=>(t(),o(c,null,[a(r(l),{title:"Dashboard"}),a(s,null,{default:n(()=>[_]),_:1})],64))}};export{p as default};

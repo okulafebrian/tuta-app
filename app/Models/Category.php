@@ -14,8 +14,8 @@ class Category extends Model
     protected $timestamp = true;
     protected $guarded = [];
 
-    public function shoes(): HasMany
+    public function products(): HasMany
     {
-        return $this->hasMany(Shoe::class);
+        return $this->hasMany(Product::class);
     }
 }

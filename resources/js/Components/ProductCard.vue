@@ -1,37 +1,26 @@
 <template>
-    <Link v-for="product in products" :href="route('shop.shoe', [product.category_id, product])"
-        class="bg-white overflow-hidden">
-    <div>
-        <img :src="'/storage/shoes/' + product.code + '/' + product.photos[0]">
+    <Link :href="route('shop.product', [product.category, product])" class="block h-full border rounded-xl">
+    <div class="p-4 pb-0">
+        <img :src="product.main_photos[0].url">
     </div>
-    <div class="">
-        <p class="text-xs font-medium uppercase">{{ product.category.name }}</p>
-        <h4 class="text-sm line-clamp-2 my-2">{{ product.name }}</h4>
-        <div v-if="product.discount_price" class="flex flex-col lg:flex-row lg:gap-2">
-            <div class="font-semibold">Rp{{ formatNumber(product.discount_price) }}</div>
-            <div class="text-gray-400 line-through">Rp{{ formatNumber(product.price) }}</div>
-        </div>
-        <div v-else>
-            <p class="font-semibold">Rp{{ formatNumber(product.price) }}</p>
+    <div class="p-4">
+        <div class="line-clamp-2 text-sm mb-1">{{ product.name }}</div>
+        <div class="flex flex-col xl:flex-row xl:gap-2">
+            <div class="font-bold" :class="{ 'text-red-600': product.is_discount }">
+                Rp{{ (product.is_discount ? product.discount_price : product.price).toLocaleString("id-ID") }}
+            </div>
+            <div v-if="product.is_discount" class="text-slate-400 line-through font-medium text-xs xl:text-base">
+                Rp{{ product.price.toLocaleString("id-ID") }}
+            </div>
         </div>
     </div>
     </Link>
 </template>
 
 <script>
-import { Link } from '@inertiajs/vue3';
-
 export default {
-    components: {
-        Link
-    },
     props: {
-        products: Object
-    },
-    methods: {
-        formatNumber(number) {
-            return number.toLocaleString("id-ID")
-        }
+        product: Object
     }
 }
 </script>

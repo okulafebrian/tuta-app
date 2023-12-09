@@ -2,16 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Shoe;
-use Illuminate\Http\Request;
+use App\Http\Resources\CollectionResource;
+use App\Http\Resources\ProductResource;
+use App\Models\Collection;
+use App\Models\Product;
+
 
 class HomeController extends Controller
 {
     public function __invoke()
     {
+        $products = Product::all();
+
+        $collection = Collection::where('name', 'Rekomendasi Kami')->first();
+        
         return inertia('Home', [
-            'shoes' => Shoe::all()
+            'products' => ProductResource::collection($products),
+            'collection' => CollectionResource::make($collection)
         ]);
+    }
+
+    public function about()
+    {
+        return inertia('About');
     }
 }

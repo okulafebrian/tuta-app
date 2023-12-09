@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth']);
+        $this->middleware(['admin.auth']);
     }
     
     public function __invoke()
     {
-        if (auth()->user()->role_id === 1) {
-            return inertia('Dashboard/Admin');
-        } else {
-            return inertia('Dashboard/User');
-        }
+        return inertia('Dashboard');
     }
 }

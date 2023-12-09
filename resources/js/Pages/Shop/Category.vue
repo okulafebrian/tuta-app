@@ -1,40 +1,32 @@
 <template>
     <Head :title="category.name" />
 
-    <GuestLayout>
-        <div class="px-4 lg:px-20 py-24">
-            <div class="mb-8">
-                <Dropdown :options="$page.props.categories">
-                    <h4 class="text-xl font-semibold">{{ category.name }} ({{ shoes.length }})</h4>
-                </Dropdown>
-            </div>
+    <div class="px-4 xl:px-16 py-10">
+        <div class="text-xl font-bold mb-6">
+            {{ category.name }} ({{ products.length }})
+        </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-10 gap-x-5 lg:gap-x-10">
-                <ProductCard :products="shoes" />
+        <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            <div v-for="product in products">
+                <ProductCard :product="product" />
             </div>
         </div>
-    </GuestLayout>
+    </div>
 </template>
 
 <script>
-import GuestLayout from "@/Layouts/GuestLayout.vue"
 import ProductCard from "@/Components/ProductCard.vue"
-import { Head, Link } from '@inertiajs/vue3';
-import Dropdown from "@/Components/Dropdown.vue";
+import UserLayout from "@/Layouts/UserLayout.vue";
 
 export default {
     components: {
-        GuestLayout, ProductCard, Link, Head, Dropdown
+        ProductCard
     },
     props: {
-        category: Object,
-        shoes: Object
+        products: Object,
+        category: Object
     },
-    computed: {
-        shoeCount() {
-            return Object.keys(this.shoes).length;
-        }
-    },
+    layout: UserLayout
 }
 </script>
 

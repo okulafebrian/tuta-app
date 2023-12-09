@@ -47,12 +47,12 @@ export default {
             extensions: [
                 StarterKit,
             ],
-            content: this.modelValue,
             editorProps: {
                 attributes: {
-                    class: 'prose-xl border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none',
+                    class: 'prose-xl border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none',
                 },
             },
+            content: this.modelValue,
             onUpdate: () => {
                 // HTML
                 this.$emit('update:modelValue', this.editor.getHTML())
@@ -68,3 +68,13 @@ export default {
     },
 }
 </script>
+
+<style lang="scss">
+.tiptap {
+    min-height: 8.6rem;
+}
+
+.tiptap p {
+    margin: 0;
+}
+</style>

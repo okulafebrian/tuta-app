@@ -16,12 +16,21 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'role_id' => '1',
-                'name' => 'TUTA ADMIN',
-                'email' => 'tuta@gmail.com',
-                'email_verified_at' => '2023-09-17 15:20:56',
+                'role_id' => '2',
+                'name' => 'Shop Admin',
+                'email' => 'shop@tuta.co.id',
+                'phone_number' => null,
+                'phone_verified_at' => null,
                 'password' => Hash::make('abc123')
             ],
+            [
+                'role_id' => '3',
+                'name' => 'IT Admin',
+                'email' => 'it@tuta.co.id',
+                'phone_number' => null,
+                'phone_verified_at' => null,
+                'password' => Hash::make('abc123')
+            ]
         ]);
     }
 }

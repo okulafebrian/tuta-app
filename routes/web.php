@@ -1,38 +1,47 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ShoeController;
 use App\Http\Controllers\ShopController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 
 Route::get('/', HomeController::class)->name('home');
-Route::get('dashboard', DashboardController::class)->name('dashboard');
 
-Route::prefix('cart')->name('cart.')->group(function () {
-    Route::post('/add', [CartController::class, 'add'])->name('add');
-    Route::delete('/remove[{key}', [CartController::class, 'remove'])->name('remove');
+Route::get('about-us', [HomeController::class, 'about'])->name('about');
+
+Route::prefix('account')->name('account.')->group(function () {
+    Route::put('update-name/{user}', [AccountController::class, 'updateName'])->name('update-name');
+    Route::put('update-phone/{user}', [AccountController::class, 'updatePhone'])->name('update-phone');
 });
-Route::get('cart', CartController::class)->name('cart');
+Route::get('account', [AccountController::class, 'index'])->name('account');
+
+Route::prefix('orders')->name('orders.')->group(function () {
+    Route::post('notification-handler', [OrderController::class, 'notification'])->name('notification');
+    Route::get('confirmation', [OrderController::class, 'confirmation'])->name('confirmation');
+    Route::get('payment-pending', [OrderController::class, 'pending'])->name('pending');
+    Route::get('invoice/{order}', [OrderController::class, 'invoice'])->name('invoice');
+});
+Route::resource('orders', OrderController::class)->middleware(['DBTransaction']);
 
 Route::prefix('shop')->name('shop.')->group(function () {
-    Route::get('/', [ShopController::class, 'index'])->name('index');
-    Route::get('/{category}', [ShopController::class, 'category'])->name('category');
-    Route::get('/{category}/{shoe}', [ShopController::class, 'shoe'])->name('shoe');
+    Route::get('{category:slug}', [ShopController::class, 'category'])->name('category');
+    Route::get('{category:slug}/{product:slug}', [ShopController::class, 'product'])->name('product');
 });
+Route::get('shop', [ShopController::class, 'index'])->name('shop');
 
-Route::prefix('shoes')->name('shoes.')->group(function () {
-    Route::post('/update-photo', [ShoeController::class, 'updatePhoto'])->name('update-photo');
+Route::prefix('addresses')->name('addresses.')->group(function () {
+    Route::put('update-main/{address}', [AddressController::class, 'updateMain'])->name('update-main');
 });
-Route::resource('shoes', ShoeController::class);
+Route::resource('addresses', AddressController::class);
 
-Route::resource('categories', CategoryController::class);
+Route::get('checkout', [CartController::class, 'checkout'])->name('checkout');
+
+Route::resource('carts', CartController::class);
+
 
 require __DIR__.'/auth.php';
 

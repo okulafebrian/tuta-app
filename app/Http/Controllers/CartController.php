@@ -2,78 +2,115 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CartRequest;
-use App\Models\Color;
-use App\Models\Shoe;
-use App\Models\ShoeVariant;
-use App\Models\Size;
+use App\Http\Resources\AddressResource;
+use App\Http\Resources\CartResource;
+use App\Models\Cart;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class CartController extends Controller
 {
-    public function __invoke()
+    public function __construct()
     {
-        $cart = session('cart');
-        $total = 0;
-        $shoes = [];
+        $this->middleware(['user.auth', 'verified.phone']);
+    }
 
-        if($cart) {
-            foreach ($cart as $key => $value) {
-                list($shoeId, $colorId, $sizeId) = explode('-', $key);
-                
-                $shoe = DB::table('shoes')
-                        ->join('shoe_variants', 'shoes.id', 'shoe_variants.shoe_id')
-                        ->join('categories', 'shoes.category_id', 'categories.id')
-                        ->join('sizes', 'shoe_variants.size_id', 'sizes.id')
-                        ->join('colors', 'shoe_variants.color_id', 'colors.id')
-                        ->select('shoe_variants.id as shoe_variant_id', 'shoes.code', 'shoes.name', 'shoes.price', 'shoes.discount_price', 'categories.name AS category', 'colors.name AS color', 'sizes.name AS size')
-                        ->where('shoe_id', $shoeId)
-                        ->where('color_id', $colorId)
-                        ->where('size_id', $sizeId)
-                        ->first();
+    public function index()
+    {                
+        $carts = auth()->user()->carts;
 
-                $shoe->key = $key;
-                $shoe->quantity = $value;
-                $shoe->subTotal = $shoe->discount_price ? $shoe->discount_price * $value : $shoe->price * $value;
-                $total += $shoe->subTotal;
-                
-                $shoes[] = $shoe;
-            }
-        }
-        
-        return inertia('Cart', [
-            'shoes' => $shoes,
-            'total' => $total
+        return inertia('Carts/Index', [
+            'carts' => CartResource::collection($carts),
+            'totalPrice' => $this->calculateTotalPrice($carts)
         ]);
     }
 
-    public function add(CartRequest $request)
-    {
-        $shoetId = $request->input('shoe_id');
-        $colorId = $request->input('color');
-        $sizeId = $request->input('size');
-        $quantity = $request->input('quantity');
-        
-        $cartKey = "$shoetId-$colorId-$sizeId";
+    public function checkout()
+    { 
+        $carts = auth()->user()->carts;
 
-        $cart = session('cart', []);
+        if ($carts->count() < 1) {
+            return redirect()->route('carts.index');
+        }
 
-        $cart[$cartKey] = $quantity;
-
-        session(['cart' => $cart]);
-
-        return redirect()->back();
+        return inertia('Carts/Checkout', [
+            'carts' => CartResource::collection($carts),
+            'addresses' => AddressResource::collection(auth()->user()->addresses),
+            'mainAddress' => AddressResource::make(auth()->user()->mainAddress),
+            'totalPrice' => $this->calculateTotalPrice($carts)
+        ]);
     }
 
-    public function remove($key)
+    public function store(Request $request)
     {
-        $cart = session('cart', []);
+        $request->validate([
+            'product_id' => 'required',
+            'color_id' => 'required',
+            'size_id' => 'required',
+            'quantity' => 'required',
+        ]);
 
-        unset($cart[$key]);
+        $productVariant = ProductVariant::where('product_id', $request->product_id)
+                        ->where('color_id', $request->color_id)
+                        ->where('size_id', $request->size_id)
+                        ->first();
 
-        session(['cart' => $cart]);
+        $carts = Cart::where('user_id', auth()->user()->id)->get();
 
-        return redirect()->back();
+        $productVariantInCart = $carts->first(function ($cart) use ($productVariant) {
+            return $cart->product_variant_id === $productVariant->id;
+        });
+
+        if($productVariantInCart) {
+            $quantity =  $productVariantInCart->quantity + $request->quantity;
+
+            if ($quantity > $productVariant->stock) {
+                return back()->with(['error' => 'Stok barang ini sisa ' . $productVariant->stock . ' dan kamu sudah punya ' . $productVariantInCart->quantity . ' di keranjangmu.']);
+            }
+            
+            $productVariantInCart->update([
+                'quantity' => $quantity
+            ]);
+        } else {
+            Cart::create([
+                'user_id' => auth()->user()->id,
+                'product_variant_id' => $productVariant->id,
+                'quantity' => $request->quantity
+            ]);
+        }
+
+        return back()->with(['success' => 'Produk berhasil ditambahkan ke keranjang.']);
+    }
+
+    public function update(Request $request, Cart $cart)
+    {
+        $cart->update([
+            'quantity' => $request->quantity
+        ]);
+    }
+
+    public function destroy(Cart $cart)
+    {
+        $cart->delete();
+
+        return back();
+    }
+
+    private function calculateTotalPrice($carts)
+    {
+        $totalPrice = 0;
+
+        foreach ($carts as $cart) {
+            $product = $cart->productVariant->product;
+            
+            $price = $product->is_discount ? $product->discount_price : $product->price;
+
+            $subTotal = $cart->quantity * $price;
+
+            $totalPrice += $subTotal;
+        }
+
+        return $totalPrice;
     }
 }
