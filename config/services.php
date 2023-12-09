@@ -35,7 +35,7 @@ return [
         'merchant_id' => env('MIDTRANS_MERCHANT_ID'),
         'client_key' => env('MIDTRANS_CLIENT_KEY'),
         'server_key' => env('MIDTRANS_SERVER_KEY'),
-        'is_production' => ((bool) env('APP_ENV') != 'production'),
+        'is_production' => (env('APP_ENV') != 'production'),
         'is_sanitized' => false,
         'is_3ds' => false,
     ],
@@ -55,6 +55,8 @@ return [
 
     'whatsapp' => [
         'api_key' => env('WA_API_KEY'),
+        'wa_contact_check_url' => env('WA_CONTACT_CHECK_URL'),
+        'wa_send_template_message_url' => env('WA_SEND_TEMPLATE_MESSAGE_URL'),
     ]
 
 ];

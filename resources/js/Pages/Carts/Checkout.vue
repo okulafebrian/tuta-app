@@ -154,7 +154,7 @@ export default {
             const response = await axios.get('api/tariff-check', {
                 params: {
                     district: address.district.name,
-                    weight: this.$page.props.quantity
+                    weight: this.$page.props.cartQuantity
                 }
             });
 

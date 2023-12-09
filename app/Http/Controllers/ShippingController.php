@@ -18,7 +18,7 @@ class ShippingController extends Controller
         $jnt = new Jnt();
         
         $weight = $request->query('weight');
-        $sendSiteCode = 'JAKARTA';
+        $sendSiteCode = 'TANGERANG';
         $destAreaCode = $request->query('district');
         
         $fee = $jnt->tariffCheck($weight, $sendSiteCode, $destAreaCode);

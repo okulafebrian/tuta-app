@@ -34,10 +34,12 @@ class CartController extends Controller
             return redirect()->route('carts.index');
         }
 
+        $mainAddress = auth()->user()->mainAddress;
+
         return inertia('Carts/Checkout', [
             'carts' => CartResource::collection($carts),
             'addresses' => AddressResource::collection(auth()->user()->addresses),
-            'mainAddress' => AddressResource::make(auth()->user()->mainAddress),
+            'mainAddress' => $mainAddress ? AddressResource::make($mainAddress): null,
             'totalPrice' => $this->calculateTotalPrice($carts)
         ]);
     }

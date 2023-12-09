@@ -17,7 +17,7 @@ class SnapService extends Midtrans
     {
         $itemDetails = [];
         
-        foreach ($order->getOrderDetails() as $orderDetail) {
+        foreach ($order->orderDetails as $orderDetail) {
             $itemDetails[] = [
                 'id' => $orderDetail->id,
                 'price' => $orderDetail->price,
@@ -25,7 +25,7 @@ class SnapService extends Midtrans
                 'name' => substr($orderDetail->name, 0, 20)
             ];
         }
-
+        
         $itemDetails[] = [
             'id' => 'SF',
             'price' => $order->shipping_fee,
@@ -53,7 +53,7 @@ class SnapService extends Midtrans
             'expiry' => [
                 'start_time' => Carbon::now()->format('Y-m-d H:i:s O'),
                 'unit' => 'minutes',
-                'duration' => 1
+                'duration' => 60
             ]
         ];
         

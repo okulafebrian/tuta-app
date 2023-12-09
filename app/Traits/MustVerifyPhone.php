@@ -39,6 +39,12 @@ trait MustVerifyPhone
         
         $whatsapp = new Whatsapp();
         
-        $whatsapp->sendOTP($this->phone_number, Crypt::decryptString($this->phone_verify_code));
+        $response = $whatsapp->sendOTP($this->phone_number, Crypt::decryptString($this->phone_verify_code));
+        
+        if (isset($response['errors'])) {
+            if ($response['errors'][0]['code'] == 1013) {
+                throw new \Exception('Nomor Anda tidak valid.');
+            }
+        }
     }
 }

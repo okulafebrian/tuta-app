@@ -42,6 +42,9 @@
                     </div>
                 </div>
             </div>
+            <div v-else class="text-center py-16 text-2xl text-slate-500 font-semibold">
+                Alamat tidak ditemukan
+            </div>
         </div>
     </div>
 </template>

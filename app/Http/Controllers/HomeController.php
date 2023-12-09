@@ -18,7 +18,7 @@ class HomeController extends Controller
         
         return inertia('Home', [
             'products' => ProductResource::collection($products),
-            'collection' => CollectionResource::make($collection)
+            'collection' => $collection ? CollectionResource::make($collection) : null
         ]);
     }
 

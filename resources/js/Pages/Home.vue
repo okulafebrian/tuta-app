@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="px-4 xl:px-16 py-20 xl:py-32">
+    <div v-if="collection" class="px-4 xl:px-16 py-20 xl:py-32">
         <div class="text-2xl xl:text-3xl text-center font-bold mb-10 xl:mb-14">Rekomendasi Untuk Anda</div>
         <div class="overflow-x-auto">
             <div class="grid grid-cols-5 gap-4 min-w-max xl:min-w-full">

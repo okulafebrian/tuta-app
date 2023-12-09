@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\Whatsapp\Whatsapp;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -50,11 +51,15 @@ class RegisteredUserController extends Controller
                 return back()->with(['error' => 'Nomor yang kamu masukkan sudah terdaftar.']);
             } 
         }
-        
-        event(new Registered($user));
-        
-        Auth::login($user);
 
-        return redirect()->route('verification-phone.notice');
+        try {
+            event(new Registered($user));
+
+            Auth::login($user);
+
+            return redirect()->route('verification-phone.notice');
+        } catch (\Exception $e) {
+            return back()->with(['error' => $e->getMessage()]);
+        }
     }
 }

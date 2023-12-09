@@ -9,7 +9,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SizeController;
-use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
 
@@ -35,8 +34,6 @@ Route::resource('collections', CollectionController::class);
 Route::resource('colors', ColorController::class);
 
 Route::resource('sizes', SizeController::class);
-
-Route::resource('roles', RoleController::class);
 
 require __DIR__.'/auth.php';
 
