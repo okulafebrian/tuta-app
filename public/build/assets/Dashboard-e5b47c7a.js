@@ -1,1 +1,0 @@
-import{A as o}from"./AdminLayout-e0f3cfa6.js";import{_ as t,o as r,c as a}from"./app-a798eb3e.js";import"./CheckCircleIcon-b26d9947.js";const e={layout:o};function s(c,n,p,_,i,m){return r(),a("div",null," DASHBOARD ")}const u=t(e,[["render",s]]);export{u as default};
