@@ -88,8 +88,10 @@
                                                     ({{ order.receiver_phone }})
                                                 </div>
                                                 <div>{{ order.receiver_address }}</div>
-                                                <div>{{ order.district }}, {{ order.city }}, {{ order.zip_code }} {{
-                                                    order.province }}</div>
+                                                <div>
+                                                    {{ order.district.name }}, {{ order.city.name }}, {{ order.zip_code.name
+                                                    }} {{ order.province.name }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -152,13 +154,9 @@ export default {
             this.$emit('closeModal')
         },
         invoice() {
-            let url = route('orders.invoice', this.order);
-            let invoiceWindow = window.open(url, '_blank');
-
-            invoiceWindow.onload = () => {
-                invoiceWindow.print();
-            };
-        }
+            const url = route('orders.invoice', this.order);
+            window.open(url, '_blank');
+        },
     }
 }
 </script>

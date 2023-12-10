@@ -23,8 +23,7 @@ Route::put('orders/cancel/{order}', [OrderController::class, 'cancel'])->name('o
 
 Route::prefix('shipping')->name('shipping.')->group(function () {
     Route::get('receipt/{shipping}', [ShippingController::class, 'receipt'])->name('receipt');
-    Route::get('{shipping}', [ShippingController::class, 'show'])->name('show');
-    Route::post('/', [ShippingController::class, 'store'])->name('store');
+    Route::post('{order}', [ShippingController::class, 'store'])->name('store');
 });
 
 Route::resource('categories', CategoryController::class);

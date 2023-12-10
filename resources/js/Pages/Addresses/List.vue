@@ -7,7 +7,7 @@
             </TransitionChild>
 
             <div class="fixed inset-0 top-0 overflow-y-auto">
-                <div class="flex items-center justify-center h-screen">
+                <div class="flex justify-center">
                     <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
                         enter-to="opacity-100 scale-100" leave="duration-300 ease-out" leave-from="opacity-100 scale-100"
                         leave-to="opacity-0 scale-95">
@@ -71,6 +71,7 @@ export default {
         }
     },
     props: {
+        userAddresses: Object,
         address: Object,
         isOpen: Boolean
     },
@@ -91,7 +92,7 @@ export default {
     },
     watch: {
         isOpen() {
-            this.addresses = this.$page.props.auth.user.addresses
+            this.addresses = this.userAddresses
         },
         selectedAddress() {
             this.updateSelection()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\District;
 use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -24,13 +25,18 @@ class OrderResource extends JsonResource
             'receiver_phone' => $this->receiver_phone,
             'receiver_address' => $this->receiver_address,
             'province' => $this->province->name,
-            'city' => $this->city->name,
-            'district' => $this->district->name,
-            'zip_code' => $this->zipCode->name,
+            'city' => CityResource::make($this->city),
+            'district' => DistrictResource::make($this->district),
+            'zip_code' => ZipCodeResource::make($this->zipCode),
+            'created_at' => $this->created_at,
+            'cancelled_at' => $this->cancelled_at,
             'formatted_created_at' => $this->formatted_created_at,
+            'formatted_cancelled_at' => $this->formatted_cancelled_at,
             'paid_at' => $this->paid_at,
             'order_details' => OrderDetailResource::collection($this->orderDetails),
-            'shipping' => ShippingResource::make($this->latestShipping())
+            'shipping' => ShippingResource::make($this->latestShipping()),
+            'expired_due_time' => $this->expired_due_time,
+            'redirect_url' => $this->redirect_url
         ];
     }
 }

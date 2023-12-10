@@ -1,5 +1,5 @@
 <template>
-    <TransitionRoot appear :show="isOpen" as="template" @after-leave="afterModalClosed">
+    <TransitionRoot appear :show="isOpen" as="template">
         <Dialog as="div" class="relative z-10">
             <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
                 leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
@@ -19,8 +19,8 @@
                             <div class="flex-1 my-4 space-y-6">
                                 <div class="text-sm ">
                                     <div class="font-semibold mb-2">Alamat Toko</div>
-                                    <div>GREEN LAKE CITY RUKAN CBD BLOK F NOMOR 022</div>
-                                    <div>Ketapang, Cipondoh, Kota Tangerang</div>
+                                    <div>{{ form.address.detail }}</div>
+                                    <div>{{ form.address.district.name }}, {{ form.address.city.name }}</div>
                                 </div>
                                 <div class="text-sm">
                                     <div class="font-semibold mb-2">Tanggal dan Waktu Pickup</div>
@@ -47,8 +47,8 @@
                                 <button type="button" @click="closeModal" class="px-6 py-2 border rounded font-medium">
                                     Batal
                                 </button>
-                                <button type="button" @click="createShipping"
-                                    class="px-6 py-2 bg-lime-600 hover:bg-lime-700 text-white rounded font-medium">
+                                <button type="button" @click="createShipping" :disabled="!validateForm"
+                                    class="px-6 py-2 bg-lime-600 hover:bg-lime-700 text-white rounded font-medium disabled:bg-slate-200 disabled:text-slate-500">
                                     Simpan
                                 </button>
                             </div>
@@ -82,26 +82,36 @@ export default {
         isOpen: Boolean,
         order: Object
     },
+    computed: {
+        validateForm() {
+            return this.form.time !== ''
+        }
+    },
     methods: {
         handleDateChange(day, month, year) {
             this.form.day = day;
             this.form.month = month
             this.form.year = year
         },
-        afterModalClosed() {
-            this.form.reset();
-        },
         closeModal() {
             this.$emit('closeModal')
         },
         createShipping() {
-            this.form.post(route('shipping.store'), {
-                onSuccess: () => this.closeModal(),
-                preserveState: false
+            this.form.post(route('shipping.store', this.order), {
+                onSuccess: () => {
+                    this.form.reset()
+                    this.closeModal()
+                }
             });
         },
     },
-    setup(props) {
+    watch: {
+        isOpen() {
+            this.form.address = this.$page.props.address
+            this.form.order = this.order
+        }
+    },
+    setup() {
         const date = new Date()
 
         const form = useForm({
@@ -109,7 +119,8 @@ export default {
             month: date.getMonth() + 1,
             year: date.getFullYear(),
             time: '',
-            order_id: props.order.id
+            order: '',
+            address: ''
         })
 
         return { form }

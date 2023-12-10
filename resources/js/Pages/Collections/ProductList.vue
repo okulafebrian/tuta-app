@@ -34,7 +34,7 @@
                                             </td>
                                             <td class="py-4 px-6">
                                                 <div class="flex items-center gap-3">
-                                                    <img :src="'/storage/products/' + product.code + '/main/' + product.mainPhoto"
+                                                    <img :src="product.main_photos[0].url"
                                                         class="border rounded p-1 w-16 h-16">
                                                     <div>
                                                         <div class="font-semibold line-clamp-2">{{ product.name }}</div>

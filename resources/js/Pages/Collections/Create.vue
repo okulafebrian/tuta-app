@@ -1,13 +1,13 @@
 <template>
-    <Head title="Tambah Koleksi" />
+    <Head title="Tambah Etalase" />
 
     <ProductList v-if="isOpen" :isOpen="isOpen" @closeModal="closeModal" :products="products" :selected="form.products" />
 
     <div class="w-3/4 mx-auto pt-6 pb-12">
         <div class="flex items-center justify-between mb-6">
-            <div class="text-xl font-semibold">Tambah Koleksi</div>
+            <div class="text-xl font-semibold">Tambah Etalase</div>
             <div>
-                <button type="button" @click="addCollection" :disabled="isDisabled"
+                <button type="button" @click="addCollection" :disabled="!validateForm"
                     class="px-8 py-2 rounded bg-lime-600 hover:bg-lime-700 disabled:bg-slate-300 disabled:text-slate-500 text-sm font-semibold text-white">
                     Selesai
                 </button>
@@ -15,9 +15,9 @@
         </div>
 
         <div class="bg-white p-8 rounded-md shadow mb-4">
-            <div class="text-sm font-medium mb-2">Nama Koleksi</div>
+            <div class="text-sm font-medium mb-2">Nama Etalase</div>
             <input v-model="form.name" type="text" class="border-gray-300 rounded-lg w-full text-sm"
-                placeholder="Tulis nama koleksi disini">
+                placeholder="Tulis nama etalase disini">
         </div>
 
         <div v-if="form.products.length > 0" class="bg-white p-8 rounded-md shadow">
@@ -44,8 +44,7 @@
                         <tr v-for="(product, index) in form.products">
                             <td class="py-4 px-6">
                                 <div class="flex items-center gap-3">
-                                    <img :src="'/storage/products/' + product.code + '/main/' + product.mainPhoto"
-                                        class="border rounded p-1 w-16 h-16">
+                                    <img :src="product.main_photos[0].url" class="border rounded p-1 w-16 h-16">
                                     <div>
                                         <div class="font-semibold line-clamp-2">{{ product.name }}</div>
                                         <div class="text-xs">{{ product.category.name }}</div>
@@ -72,8 +71,8 @@
 
         <div v-else class="bg-white py-12 rounded-md shadow text-center">
             <div class="mb-6">
-                <div class="text-lg font-semibold">Isi dulu koleksinya</div>
-                <div class="text-sm">Pilih produk yang sesuai dengan nama koleksi</div>
+                <div class="text-lg font-semibold">Isi dulu etalasenya</div>
+                <div class="text-sm">Pilih produk yang sesuai dengan nama etalase</div>
             </div>
             <button type="button" @click="openModal"
                 class="bg-lime-600 hover:bg-lime-700 text-white font-semibold px-10 py-2 rounded">
@@ -92,8 +91,7 @@ import { TrashIcon } from '@heroicons/vue/24/outline';
 export default {
     data() {
         return {
-            isOpen: false,
-            isDisabled: true
+            isOpen: false
         }
     },
     props: {
@@ -101,11 +99,6 @@ export default {
     },
     components: {
         ProductList, TrashIcon
-    },
-    watch: {
-        'form.products'() {
-            this.isDisabled = this.form.products.length > 0 ? false : true
-        }
     },
     methods: {
         openModal() {
@@ -123,8 +116,11 @@ export default {
         },
         removeProduct(index) {
             this.form.products.splice(index, 1)
-
-            this.isDisabled = this.form.products.length > 0 ? false : true
+        }
+    },
+    computed: {
+        validateForm() {
+            return this.form.name !== '' && this.form.products.length > 0
         }
     },
     setup() {

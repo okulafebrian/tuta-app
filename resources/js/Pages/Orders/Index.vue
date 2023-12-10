@@ -1,7 +1,8 @@
 <template>
     <Head title="Pembelian" />
 
-    <OrderShow :isOpen="isOpen" @closeModal="closeModal" :order="order" />
+    <OrderShow :isOpen="showIsOpen" @closeModal="closeShowModal" :order="order" />
+    <Tracking :isOpen="trackingIsOpen" @closeModal="closeTrackingModal" :order="order" />
 
     <div class="xl:px-36 py-10 flex flex-col xl:flex-row xl:gap-20">
         <Sidebar />
@@ -17,7 +18,7 @@
                 </Link>
                 <Link :href="route('orders.index', { status: 'dikemas' })"
                     class="block px-4 py-2 border rounded-full text-gray-600 whitespace-nowrap"
-                    :class="{ 'bg-lime-100 border-lime-600 text-lime-600': $page.url === '/orders?status=diproses' }">
+                    :class="{ 'bg-lime-100 border-lime-600 text-lime-600': $page.url === '/orders?status=dikemas' }">
                 Dikemas
                 </Link>
                 <Link :href="route('orders.index', { status: 'dikirim' })"
@@ -38,14 +39,13 @@
             </div>
 
             <div v-if="orders.length > 0" class="space-y-4">
-                <button type="button" v-for="order in orders" class="border rounded-2xl p-4 xl:p-6 text-start w-full"
-                    @click="openModal(order)">
+                <div v-for="order in orders" class="border rounded-2xl p-4 xl:p-6 text-start w-full">
                     <div class="text-xs flex gap-2 mb-4">
                         <div>{{ order.formatted_created_at }}</div>
                         <Status :status="order.status" />
                         <div>{{ order.code }}</div>
                     </div>
-                    <div class="flex flex-col xl:flex-row gap-4">
+                    <div class="flex flex-col xl:flex-row gap-4 mb-4">
                         <div class="flex-1 flex gap-3">
                             <div>
                                 <img :src="'/storage/products/' + order.order_details[0].code + '/' + order.order_details[0].photo"
@@ -75,7 +75,17 @@
                             </div>
                         </div>
                     </div>
-                </button>
+                    <div class="flex justify-end gap-4">
+                        <button type="button" @click="openShowModal(order)"
+                            class="text-sm font-semibold text-lime-600 hover:text-lime-700 p-2">
+                            Lihat Detail Transaksi
+                        </button>
+                        <button type="button" @click="openTrackingModal(order)" v-if="[3, 4].includes(order.status)"
+                            class="block rounded-full bg-lime-600 hover:bg-lime-700 text-white px-6 py-2 text-sm font-semibold">
+                            Lacak
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div v-else class="text-center py-10 text-xl text-zinc-600 font-semibold">
@@ -90,28 +100,38 @@ import UserLayout from '@/Layouts/UserLayout.vue';
 import Sidebar from '@/Components/Sidebar/Account.vue';
 import Status from '@/Components/Status.vue';
 import OrderShow from '@/Pages/Orders/Show.vue'
+import Tracking from '@/Pages/Shipping/Show.vue'
 
 export default {
     data() {
         return {
-            isOpen: false,
+            showIsOpen: false,
+            trackingIsOpen: false,
             order: null
         }
     },
     components: {
-        Sidebar, Status, OrderShow
+        Sidebar, Status, OrderShow, Tracking
     },
     props: {
         orders: Object
     },
     methods: {
-        openModal(order) {
+        openShowModal(order) {
             this.order = order
-            this.isOpen = true
+            this.showIsOpen = true
         },
-        closeModal() {
-            this.isOpen = false
+        closeShowModal() {
+            this.showIsOpen = false
         },
+        openTrackingModal(order) {
+            this.order = order
+            this.trackingIsOpen = true
+        },
+        closeTrackingModal() {
+            this.trackingIsOpen = false
+        },
+
     },
     layout: UserLayout
 }

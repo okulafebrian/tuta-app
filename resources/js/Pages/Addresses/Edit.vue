@@ -170,7 +170,11 @@ export default {
         getCities() {
             if (this.form.province_id) {
                 axios.get(route('cities.load', this.form.province_id))
-                    .then(response => this.cities = response.data.cities)
+                    .then(response => {
+                        this.cities = response.data.cities.sort((a, b) => {
+                            return a.name.localeCompare(b.name);
+                        });
+                    })
             }
 
             if (!this.initial1) {
@@ -182,7 +186,11 @@ export default {
         getDistricts() {
             if (this.form.city_id) {
                 axios.get(route('districts.load', this.form.city_id))
-                    .then(response => this.districts = response.data.districts)
+                    .then(response => {
+                        this.districts = response.data.districts.sort((a, b) => {
+                            return a.name.localeCompare(b.name);
+                        });
+                    })
             }
 
             if (!this.initial2) {
@@ -194,7 +202,11 @@ export default {
         getZipCodes() {
             if (this.form.district_id) {
                 axios.get(route('zip-codes.load', this.form.district_id))
-                    .then(response => this.zipCodes = response.data.zipCodes)
+                    .then(response => {
+                        this.zipCodes = response.data.zipCodes.sort((a, b) => {
+                            return a.name.localeCompare(b.name);
+                        });
+                    })
             }
 
             if (!this.initial3) {

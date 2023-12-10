@@ -21,22 +21,21 @@ class ShippingController extends Controller
         $sendSiteCode = 'TANGERANG';
         $destAreaCode = $request->query('district');
         
-        $fee = $jnt->tariffCheck($weight, $sendSiteCode, $destAreaCode);
+        $response = $jnt->tariffCheck($weight, $sendSiteCode, $destAreaCode);
         
-        return $fee;
+        return $response;
     }
 
-    public function store(Request $request)
+    public function store(Order $order, Request $request)
     {
         $request->validate([
             'day' => 'required',
             'month' => 'required',
             'year' => 'required',
             'time' => 'required',
-            'order_id' => 'required'
+            'address' => 'required'
         ]);
         
-        $order = Order::find($request->order_id);
         $code = Shipping::generateCode();
 
         if ($request->time == 'afternoon') {
@@ -49,14 +48,19 @@ class ShippingController extends Controller
         
         $orderData = [
             'orderid' => $code,
+            'shipper_name' => $request->address['name'],
+            'shipper_contact' => $request->address['name'],
+            'shipper_phone' => '+' . $request->address['phone_number'],
+            'shipper_addr' => $request->address['detail'],
+            'origin_code' => $request->address['city']['code'],
             'receiver_name' => $order->receiver_name,
-            'receiver_phone' => $order->receiver_phone,
+            'receiver_phone' => '+' . $order->receiver_phone,
             'receiver_addr' => $order->receiver_address,
             'receiver_zip' => $order->zipCode->name,
             'destination_code' => $order->city->code,
             'receiver_area' => $order->district->code,
             'qty' => $order->total_quantity,
-            'cod' => $order->cod ? $order->total_payment : '',
+            'cod' => $order->payment_type == 'cod' ? $order->total_payment : '',
             'goodsvalue' => $order->total_price,
             'sendstarttime' => $sendstarttime->format('Y-m-d H:i:s'),
             'sendendtime' => $sendendtime->format('Y-m-d H:i:s')
@@ -66,19 +70,21 @@ class ShippingController extends Controller
         $res = $jnt->createOrder($orderData);
         
         $status = $res['detail'][0]['status'];
-
+        
         if ($status == 'Error') {
-            $reason = $res['detail'][0]['status'];
+            $reason = $res['detail'][0]['reason'];
 
             return back()->with(['error' => $reason]);
         }
         
         Shipping::create([
-            'order_id' => $order->id,
+            'order_id' => $order['id'],
             'code' => $code,
             'awb_no' => $res['detail'][0]['awb_no'],
+            'des_code' => $res['detail'][0]['desCode'],
             'send_start_time' => $sendstarttime,
             'send_end_time' => $sendendtime,
+            'etd' => $res['detail'][0]['etd'],
         ]);
 
         $order->update([
@@ -88,14 +94,12 @@ class ShippingController extends Controller
         return back()->with(['success' => 'Pengiriman berhasil dibuat.']);
     }
 
-    public function show(Shipping $shipping)
+    public function track($awbNo)
     {
         $jnt = new Jnt();
-        $res = $jnt->trackOrder($shipping->awb_no);
+        $response = $jnt->trackOrder($awbNo);
         
-        // No follow-up action
-        
-        return $res;
+        return $response;
     }
 
     public function receipt(Shipping $shipping)

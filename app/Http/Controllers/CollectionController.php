@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CollectionRequest;
+use App\Http\Resources\CollectionResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Collection;
 use App\Models\CollectionProduct;
 use App\Models\Product;
@@ -13,7 +16,7 @@ class CollectionController extends Controller
 {
     public function index()
     {
-        $collections = Collection::withCount('collectionProducts')->paginate(12);
+        $collections = Collection::paginate(12);
         
         return inertia('Collections/Index', [
             'collections' => $collections
@@ -22,23 +25,16 @@ class CollectionController extends Controller
 
     public function create()
     {
-        $products = Product::with('category')->get();
-
-        foreach ($products as $product) {
-            $product['mainPhoto'] = $product->getMainPhoto();
-        }
+        $products = Product::all();
 
         return inertia('Collections/Create', [
-            'products' => $products
+            'products' => ProductResource::collection($products)
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CollectionRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'products' => 'required'
-        ]);
+        
 
         $collection = Collection::create([
             'name' => $request->name,
@@ -54,31 +50,37 @@ class CollectionController extends Controller
         
         CollectionProduct::insert($collectionProducts);
 
-        return redirect()->route('collections.index')->with(['success' => 'Koleksi baru berhasil ditambahkan.']);
+        return redirect()->route('collections.index')->with(['success' => 'Etalase baru berhasil ditambahkan.']);
     }
 
     public function edit(Collection $collection)
     {
-        $products = Product::with('category')->get();
+        $products = Product::all();
 
-        foreach ($products as $product) {
-            $product['mainPhoto'] = $product->getMainPhoto();
-        }
-
-        $collection->load('products', 'products.category');
-        
-        foreach ($collection->products as $product) {
-            $product->mainPhoto = $product->getMainPhoto();
-        }
-        
         return inertia('Collections/Edit', [
-            'collection' => $collection,
-            'products' => $products
+            'collection' => CollectionResource::make($collection),
+            'products' => ProductResource::collection($products)
         ]);
+    }
+
+    public function update(CollectionRequest $request, Collection $collection)
+    {
+        $newProductIds = collect($request->products)->pluck('id')->toArray();
+
+        $collection->update([
+            'name' => $request->name,
+            'slug' => Str::of($request->name)->lower()->slug('-'),
+        ]);
+        
+        $collection->products()->sync($newProductIds);
+
+        return redirect()->route('collections.index')->with(['success' => 'Etalase berhasil disimpan.']);
     }
 
     public function destroy(Collection $collection)
     {
-        //
+        $collection->delete();
+
+        return back()->with(['success' => 'Etalase berhasil dihapus.']);
     }
 }

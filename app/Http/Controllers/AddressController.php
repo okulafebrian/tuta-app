@@ -19,7 +19,7 @@ class AddressController extends Controller
         $mainAddress = auth()->user()->mainAddress;
 
         return inertia('Addresses/Index', [
-            'addresses' => AddressResource::collection(auth()->user()->addresses),
+            'addresses' => AddressResource::collection(auth()->user()->addresses->sortByDesc('is_main')),
             'mainAddress' => $mainAddress ? AddressResource::make($mainAddress) : null
         ]);
     }

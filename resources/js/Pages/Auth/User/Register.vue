@@ -16,12 +16,12 @@
             <div>
                 <div class="mb-6">
                     <div class="text-sm font-medium mb-2">Nama Lengkap</div>
-                    <input v-model="form.name" type="text" class="border-gray-300 rounded-lg w-full text-sm"
-                        placeholder="Nama Depan & Nama Belakang">
+                    <input v-model="form.name" @input="validateName" type="text"
+                        class="border-gray-300 rounded-lg w-full text-sm" placeholder="Nama Depan & Nama Belakang">
                 </div>
                 <div class="mb-8">
                     <div class="text-sm font-medium mb-2">Nomor HP</div>
-                    <input v-model="form.phone_number" @input="validateInput" type="text"
+                    <input v-model="form.phone_number" @input="validatePhone" type="text"
                         class="border-gray-300 rounded-lg w-full text-sm" placeholder="08xxxxxxxxxx">
                     <div class="text-xs text-zinc-500 mt-2">Pastikan nomor HP terhubung ke WhatsApp</div>
                 </div>
@@ -53,7 +53,12 @@ export default {
         flash: Object
     },
     methods: {
-        validateInput() {
+        validateName() {
+            if (this.form.name.length > 30) {
+                this.form.name = this.form.name.slice(0, 30);
+            }
+        },
+        validatePhone() {
             this.form.phone_number = this.form.phone_number.replace(/[^0-9]/g, '');
 
             if (this.form.phone_number.length > 7 && !isNaN(this.form.phone_number)) {

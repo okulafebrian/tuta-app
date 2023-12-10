@@ -65,8 +65,10 @@
                                 {{ shipping.order.receiver_name }} - {{ shipping.order.receiver_phone }}
                             </div>
                             <div>{{ shipping.order.receiver_address }}</div>
-                            <div>{{ shipping.order.district }}, {{ shipping.order.city }}, {{
-                                shipping.order.province }}</div>
+                            <div>
+                                {{ shipping.order.district.name }}, {{ shipping.order.city.name }}, {{
+                                    shipping.order.zip_code.name }} {{ shipping.order.province.name }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -74,16 +76,20 @@
                 <div class="text-[8px]">
                     <div class="font-semibold mb-1">DETAIL BARANG</div>
                     <table class="w-full">
-                        <tr class="text-zinc-500 font-semibold border-b">
-                            <td class="text-start py-1">Nama Barang</td>
-                            <td class="text-start py-1">Variasi</td>
-                            <td class="text-start">Jumlah</td>
-                        </tr>
-                        <tr v-for="orderDetail in shipping.order.order_details">
-                            <td class="py-1">{{ orderDetail.name }}</td>
-                            <td>{{ orderDetail.color }}, {{ orderDetail.size }}</td>
-                            <td>{{ orderDetail.quantity }}</td>
-                        </tr>
+                        <thead>
+                            <tr class="text-zinc-500 font-semibold border-b">
+                                <td class="text-start">Nama Barang</td>
+                                <td class="text-start">Variasi</td>
+                                <td class="text-start">Jumlah</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(orderDetail, index) in shipping.order.order_details">
+                                <td :class="{ 'pt-1': index == 0 }">{{ orderDetail.name }}</td>
+                                <td>{{ orderDetail.color }}, {{ orderDetail.size }}</td>
+                                <td>{{ orderDetail.quantity }}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>

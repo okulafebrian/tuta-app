@@ -17,8 +17,10 @@ return new class extends Migration
             $table->foreign('order_id')->references('id')->on('orders');
             $table->string('code')->unique();
             $table->string('awb_no')->index();
+            $table->string('des_code');
             $table->timestamp('send_start_time');
             $table->timestamp('send_end_time');
+            $table->string('etd');
             $table->timestamps();
             $table->softDeletes();
         });

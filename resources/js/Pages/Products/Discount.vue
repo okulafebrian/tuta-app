@@ -3,7 +3,9 @@
 
     <Notif v-if="flash.error || flash.success" :flash="flash" />
 
-    <div class="w-3/4 mx-auto pt-6 pb-12">
+    <Sidebar />
+
+    <div class="w-[85%] ms-auto px-10 pt-6 pb-12">
         <div class="text-xl font-semibold mb-6">Atur Diskon</div>
 
         <div class="bg-white shadow-sm rounded-sm mb-6">
@@ -55,18 +57,11 @@
             </table>
         </div>
 
-        <div class="flex justify-end gap-3 text-sm font-medium">
-            <div>
-                <Link :href="route('products.index')" class="block border bg-white py-2 px-10 rounded">
-                Batal
-                </Link>
-            </div>
-            <div>
-                <button type="button" @click="updateDiscount"
-                    class="bg-lime-600 hover:bg-lime-700 text-white py-2 px-10 rounded">
-                    Simpan
-                </button>
-            </div>
+        <div class="flex justify-end">
+            <button type="button" @click="updateDiscount"
+                class="bg-lime-600 hover:bg-lime-700 text-white py-2 px-10 rounded text-sm font-medium">
+                Simpan
+            </button>
         </div>
     </div>
 </template>
@@ -74,11 +69,15 @@
 <script>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useForm } from '@inertiajs/vue3';
+import Sidebar from '@/Components/Sidebar/Admin.vue'
 
 export default {
     props: {
         products: Object,
         flash: Object
+    },
+    components: {
+        Sidebar
     },
     methods: {
         discountPrice(price, i) {
@@ -105,7 +104,7 @@ export default {
 
         return { form }
     },
-    layout: AdminLayout
+    layout: AdminLayout,
 }
 </script>
 

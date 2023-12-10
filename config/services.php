@@ -55,7 +55,6 @@ return [
 
     'whatsapp' => [
         'api_key' => env('WA_API_KEY'),
-        'wa_contact_check_url' => env('WA_CONTACT_CHECK_URL'),
         'wa_send_template_message_url' => env('WA_SEND_TEMPLATE_MESSAGE_URL'),
     ]
 

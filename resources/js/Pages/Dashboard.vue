@@ -4,19 +4,8 @@
     <Sidebar />
 
     <div class="w-[85%] ms-auto px-10 pt-6 pb-12">
-        <!-- <div class="text-xl font-semibold mb-6">Dashboard</div> -->
-
-        <div class="grid grid-cols-3">
-            <div>
-                Pesanan baru
-            </div>
-            <div>
-                Siap dikirim
-            </div>
-            <div>
-                Pesanan baru
-            </div>
-        </div>
+        <div class="text-lg font-semibold">TUTA OFFICIAL SHOP</div>
+        <div class="text-sm">Admin Panel</div>
     </div>
 </template>
 

@@ -89,8 +89,8 @@
                                 </div>
                             </div>
                             <div class="py-2 flex xl:justify-end gap-2">
-                                <button v-if="mainAddress" type="button" @click="closeModal"
-                                    class="px-8 py-2 rounded-full border font-semibold w-1/2 xl:w-auto">
+                                <button v-if="mainAddress || $page.component !== 'Carts/Checkout'" type="button"
+                                    @click="closeModal" class="px-8 py-2 rounded-full border font-semibold w-1/2 xl:w-auto">
                                     Batal
                                 </button>
                                 <button type="button" @click="addAddress" :disabled="!validateForm"
@@ -157,7 +157,10 @@ export default {
         },
         addAddress() {
             this.form.post(route('addresses.store'), {
-                onSuccess: () => this.closeModal()
+                onSuccess: () => {
+                    this.closeModal(),
+                        this.form.reset()
+                }
             });
         },
     },

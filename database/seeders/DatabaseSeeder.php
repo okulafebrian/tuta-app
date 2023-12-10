@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SizeSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
+            AddressSeeder::class,
         ]);
     }
 }

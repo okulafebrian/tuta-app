@@ -29,8 +29,5 @@ Route::get('provinces', [ProvinceController::class, 'load'])->name('provinces.lo
 Route::get('cities/{provinceId}', [CityController::class, 'load'])->name('cities.load');
 Route::get('districts/{cityId}', [DistrictController::class, 'load'])->name('districts.load');
 Route::get('zip-codes/{districtId}', [ZipCodeController::class, 'load'])->name('zip-codes.load');
-
-
-
-
-Route::get('tariff-check', [ShippingController::class, 'tariffCheck'])->name('tariff-check');
+Route::get('shipping/tariff-check', [ShippingController::class, 'tariffCheck'])->name('shipping.tariff-check');
+Route::get('shipping/track/{awbNo}', [ShippingController::class, 'track'])->name('shipping.track');

@@ -4,8 +4,8 @@
     <Notif v-if="flash.error || flash.success" :flash="flash" />
 
     <AddressList :isOpen="addressListOpen" @addAddress="openAddressCreate" @closeModal="closeAddressList"
-        :addresses="addresses" :address="selectedAddress" />
-    <AddressCreate :isOpen="addressCreateOpen" @closeModal="closeAddressCreate" />
+        :userAddresses="addresses" :address="selectedAddress" />
+    <AddressCreate :isOpen="addressCreateOpen" @closeModal="closeAddressCreate" :mainAddress="mainAddress" />
 
     <div class="px-4 xl:px-24 py-10">
         <div class="text-xl font-bold mb-6">Checkout</div>
@@ -151,7 +151,7 @@ export default {
             this.form.post(route('orders.store'))
         },
         async updatePayment(address) {
-            const response = await axios.get('api/tariff-check', {
+            const response = await axios.get(route('shipping.tariff-check'), {
                 params: {
                     district: address.district.name,
                     weight: this.$page.props.cartQuantity

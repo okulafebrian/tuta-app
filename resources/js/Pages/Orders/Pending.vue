@@ -51,14 +51,14 @@
                         </div>
                     </div>
                     <div
-                        class="flex flex-col xl:flex-row justify-between gap-3 text-center items-center text-xs xl:text-sm font-semibold p-4 pt-0 xl:p-6 xl:pt-0">
-                        <div class="bg-red-100 text-red-600 rounded px-4 py-2 w-full xl:w-auto">
-                            Bayar sebelum {{ order.expiredDueTime }}
+                        class="flex flex-col xl:flex-row justify-between gap-3 text-center items-center font-semibold p-4 pt-0 xl:p-6 xl:pt-0">
+                        <div class="bg-red-100 text-red-600 rounded px-4 py-2 w-full xl:w-auto text-xs">
+                            Bayar sebelum {{ order.expired_due_time }}
                         </div>
-                        <a :href="order.redirect_url" target="_blank"
-                            class="block rounded-full bg-lime-600 hover:bg-lime-700 text-white px-6 py-3 xl:py-2 w-full xl:w-auto">
+                        <button type="button" @click="pay(order)"
+                            class="block rounded-full bg-lime-600 hover:bg-lime-700 text-white px-6 py-2 w-full xl:w-auto text-sm">
                             Lanjut Bayar
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -100,6 +100,10 @@ export default {
         },
         cancelOrder(order) {
             this.$inertia.put(route('orders.cancel', order))
+        },
+        pay(order) {
+            const url = order.redirect_url
+            window.open(url, '_blank');
         }
     },
     layout: UserLayout

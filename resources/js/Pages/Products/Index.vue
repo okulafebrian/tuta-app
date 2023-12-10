@@ -8,34 +8,31 @@
     <div class="w-[85%] ms-auto px-10 pt-6 pb-12">
         <div class="text-xl font-semibold">Daftar Produk</div>
 
-        <div class="flex items-center gap-3 my-4">
-            <div class="flex items-center ps-3 rounded overflow-hidden border border-gray-200 bg-white flex-1">
-                <MagnifyingGlassIcon class="w-5 h-5 stroke-2 text-gray-500" />
+        <div class="flex justify-between items-center gap-3 my-6">
+            <div class="w-1/3 flex items-center ps-3 rounded overflow-hidden shadow bg-white">
+                <MagnifyingGlassIcon class="w-5 h-5 stroke-2 text-gray-400" />
                 <input v-model="search" @keyup.enter="filter" type="text" class="border-0 focus:ring-0 text-sm w-full"
                     placeholder="Cari nama sepatu">
             </div>
-            <div>
-                <Link :href="route('categories.index')" class="block px-4 py-2 rounded border text-sm font-medium bg-white">
-                Atur Kategori
-                </Link>
-            </div>
-            <div>
-                <Link :href="route('collections.index')"
-                    class="block px-4 py-2 rounded border text-sm font-medium bg-white">
-                Atur Koleksi
-                </Link>
-            </div>
-            <div>
-                <Link :href="route('products.manage-discount')"
-                    class="block px-4 py-2 rounded border text-sm font-medium bg-white">
-                Atur Diskon
-                </Link>
-            </div>
-            <div>
-                <Link :href="route('products.create')"
-                    class="flex gap-1 items-center ps-3 pe-4 py-2 rounded bg-lime-600 hover:bg-lime-700 text-sm font-medium text-white">
-                <PlusIcon class="w-5 h-5" /> Tambah Produk
-                </Link>
+            <div class="flex gap-3">
+                <div>
+                    <Link :href="route('collections.index')"
+                        class="block px-4 py-2 rounded border text-sm font-medium bg-white">
+                    <InboxStackIcon class="w-5 h-5" />
+                    </Link>
+                </div>
+                <div>
+                    <Link :href="route('products.manage-discount')"
+                        class="block px-4 py-2 rounded border text-sm font-medium bg-white">
+                    Atur Diskon
+                    </Link>
+                </div>
+                <div>
+                    <Link :href="route('products.create')"
+                        class="flex gap-1 items-center ps-3 pe-4 py-2 rounded bg-lime-600 hover:bg-lime-700 text-sm font-medium text-white">
+                    <PlusIcon class="w-5 h-5" /> Tambah Produk
+                    </Link>
+                </div>
             </div>
         </div>
 
@@ -111,7 +108,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import Dropdown from '@/Components/Dropdown/Product.vue'
 import Pagination from '@/Components/Pagination.vue';
 import { PlusIcon } from '@heroicons/vue/20/solid';
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
+import { MagnifyingGlassIcon, InboxStackIcon } from '@heroicons/vue/24/outline';
 import Sidebar from '@/Components/Sidebar/Admin.vue'
 
 export default {
@@ -125,7 +122,8 @@ export default {
         Dropdown,
         Pagination,
         PlusIcon,
-        MagnifyingGlassIcon
+        MagnifyingGlassIcon,
+        InboxStackIcon
     },
     methods: {
         filter() {

@@ -6,9 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
@@ -27,7 +25,12 @@ class Order extends Model
     protected $primaryKey = 'id';
     protected $timestamp = true;
     protected $guarded = [];
-    protected $appends = ['formatted_created_at', 'formatted_expired_at', 'expiredDueTime'];
+    protected $appends = [
+        'formatted_created_at',
+        'formatted_expired_at',
+        'formatted_cancelled_at',
+        'expired_due_time',
+    ];
     protected $casts = [
         'paid_at' => 'datetime',
         'shipped_at' => 'datetime',
@@ -59,41 +62,25 @@ class Order extends Model
     {
         $createdAt  = $this->created_at;
 
-        return $createdAt->format('d F Y');
+        if ($createdAt) {
+            return $createdAt->translatedFormat('d M Y');
+        }
     }
 
-    public function getFormattedExpiredAtAttribute()
+    public function getFormattedCancelledAtAttribute()
     {
-        $now = now();
-        $expiredAt  = $this->expired_at;
-        
-        if ($expiredAt != null) {      
-            if ($expiredAt->isToday()) {
-                return 'Hari ini ' . $expiredAt->format('H:i');
-            } elseif ($expiredAt->isYesterday()) {
-                return 'Kemarin ' . $expiredAt->format('H:i');
-            } elseif ($expiredAt->year === $now->year) {
-                return $expiredAt->format('d M H:i');
-            } else {
-                return $expiredAt->format('d/m/y H:i');
-            }
+        $cancelledAt  = $this->cancelled_at;
+
+        if ($cancelledAt) {
+            return $cancelledAt->translatedFormat('d M Y H:m');
         }
     }
 
     public function getExpiredDueTimeAttribute()
     {
-        $now = now();
         $expiredDueTime = Carbon::parse($this->created_at)->addHour();
 
-        if ($expiredDueTime->isToday()) {
-            return 'Hari ini ' . $expiredDueTime->format('H:i');
-        } elseif ($expiredDueTime->isYesterday()) {
-            return 'Kemarin ' . $expiredDueTime->format('H:i');
-        } elseif ($expiredDueTime->year === $now->year) {
-            return $expiredDueTime->format('d M H:i');
-        } else {
-            return $expiredDueTime->format('d/m/y H:i');
-        }
+        return $expiredDueTime->translatedFormat('d M Y H:i');
     }
 
     public function orderDetails(): HasMany

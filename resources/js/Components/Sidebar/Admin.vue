@@ -18,7 +18,7 @@
 
             <Link :href="route('products.index')"
                 class="relative flex items-center gap-3 text-start w-full px-6 py-3 hover:bg-slate-100/80"
-                :class="$page.component.startsWith('Products') ? 'text-lime-600 after:top-2 after:bottom-2 after:left-0 after:border-2 after:absolute after:border-lime-600' : 'text-gray-400'">
+                :class="$page.component.startsWith('Products') || $page.component.startsWith('Collections') ? 'text-lime-600 after:top-2 after:bottom-2 after:left-0 after:border-2 after:absolute after:border-lime-600' : 'text-gray-400'">
             <ArchiveBoxIcon class="w-5 h-5" />
             <div>Produk</div>
             </Link>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PaymentNotification;
+use App\Http\Resources\AddressResource;
 use App\Http\Resources\OrderResource;
 use App\Models\Address;
 use App\Models\Cart;
@@ -74,11 +75,20 @@ class OrderController extends Controller
         if ($code) {
             $query->whereIn('status', $code);
         }
+
+        $statusCounts = Order::select('status', DB::raw('count(*) as count'))
+                        ->groupBy('status')
+                        ->pluck('count', 'status')
+                        ->toArray();
         
         $orders = $query->orderBy('created_at', 'desc')->get();
 
+        $address = auth()->user()->mainAddress;
+        
         return inertia('Orders/Manage', [
-            'orders' => OrderResource::collection($orders)
+            'orders' => OrderResource::collection($orders),
+            'address' => $address ? AddressResource::make($address) : null,
+            'statusCounts' => $statusCounts
         ]);
     }
 
@@ -180,9 +190,9 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        if ($order->shipping) {
+        if ($order->latestShipping()) {
             $jnt = new Jnt();
-            $res = $jnt->cancelOrder($order->shipping->code);
+            $res = $jnt->cancelOrder($order->latestShipping()->code);
 
             $status = $res['detail'][0]['status'];
             $reason = $res['detail'][0]['reason'];

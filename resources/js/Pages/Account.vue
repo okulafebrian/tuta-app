@@ -14,15 +14,15 @@
                 <div class="text-sm w-full">
                     <div class="font-semibold mb-1">Nama Lengkap</div>
                     <div v-if="showEditName" class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                        <input type="text" v-model="form.name" placeholder="Nama Depan & Nama Belakang"
-                            class="border-gray-300 rounded-lg text-sm">
+                        <input type="text" v-model="form.name" @input="validateName"
+                            placeholder="Nama Depan & Nama Belakang" class="border-gray-300 rounded-lg text-sm">
                         <div class="flex gap-3">
                             <button type="button" @click="showEditName = false"
                                 class="border border-gray-300 bg-white rounded-full px-6 py-2 font-semibold text-sm w-1/2 xl:w-auto">
                                 Batal
                             </button>
-                            <button type="button" @click="updateName"
-                                class="bg-lime-600 hover:bg-lime-700 text-white rounded-full px-4 py-2 font-semibold text-sm w-1/2 xl:w-auto">
+                            <button type="button" @click="updateName" :disabled="disableUpdateName"
+                                class="bg-lime-600 hover:bg-lime-700 disabled:bg-slate-300 disabled:text-slate-500 text-white rounded-full px-4 py-2 font-semibold text-sm w-1/2 xl:w-auto">
                                 Simpan
                             </button>
                         </div>
@@ -41,7 +41,7 @@
                     <div class="font-semibold mb-1">Nomor HP</div>
                     <div v-if="showEditPhone" class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                         <div class="flex gap-3">
-                            <input type="text" v-model="form.phone_number" @input="validateInput"
+                            <input type="text" v-model="form.phone_number" @input="validatePhone"
                                 class="border-gray-300 rounded-lg text-sm w-full xl:w-auto" required>
                         </div>
                         <div class="flex gap-2">
@@ -49,8 +49,8 @@
                                 class="border border-gray-300 bg-white rounded-full px-6 py-2 font-semibold text-sm w-1/2 xl:w-auto">
                                 Batal
                             </button>
-                            <button type="button" @click="updatePhone"
-                                class="bg-lime-600 hover:bg-lime-700 disabled:bg-slate-200 disabled:text-slate-500 text-white rounded-full px-4 py-2 font-semibold text-sm w-1/2 xl:w-auto">
+                            <button type="button" @click="updatePhone" :disabled="disableUpdateName"
+                                class="bg-lime-600 hover:bg-lime-700 disabled:bg-slate-300 disabled:text-slate-500 text-white rounded-full px-4 py-2 font-semibold text-sm w-1/2 xl:w-auto">
                                 Simpan
                             </button>
                         </div>
@@ -75,7 +75,9 @@ export default {
     data() {
         return {
             showEditName: false,
-            showEditPhone: false
+            showEditPhone: false,
+            disableUpdateName: true,
+            disableUpdatePhone: true
         }
     },
     components: {
@@ -86,7 +88,12 @@ export default {
         flash: Object
     },
     methods: {
-        validateInput() {
+        validateName() {
+            if (this.form.name.length > 30) {
+                this.form.name = this.form.name.slice(0, 30);
+            }
+        },
+        validatePhone() {
             this.form.phone_number = this.form.phone_number.replace(/[^0-9]/g, '');
 
             if (this.form.phone_number.length > 15) {
@@ -113,6 +120,14 @@ export default {
                 (now.getMonth() - phoneLastUpdateDate.getMonth()))
 
             return monthsDifference >= 2;
+        }
+    },
+    watch: {
+        'form.name'() {
+            this.disableUpdateName = false
+        },
+        'form.phone_number'() {
+            this.disableUpdatePhone = false
         }
     },
     setup(props) {

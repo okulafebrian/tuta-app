@@ -20,8 +20,8 @@ import { TransitionRoot } from '@headlessui/vue';
 export default {
     data() {
         return {
-            error: this.flash.error ?? null,
-            success: this.flash.success ?? null,
+            error: this.flash.error ?? '',
+            success: this.flash.success ?? '',
             isOpen: this.flash.error || this.flash.success ? true : false
         };
     },

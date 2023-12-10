@@ -38,7 +38,7 @@ class CartController extends Controller
 
         return inertia('Carts/Checkout', [
             'carts' => CartResource::collection($carts),
-            'addresses' => AddressResource::collection(auth()->user()->addresses),
+            'addresses' => AddressResource::collection(auth()->user()->addresses->sortByDesc('is_main')),
             'mainAddress' => $mainAddress ? AddressResource::make($mainAddress): null,
             'totalPrice' => $this->calculateTotalPrice($carts)
         ]);
@@ -96,7 +96,7 @@ class CartController extends Controller
     {
         $cart->delete();
 
-        return back();
+        return back()->with(['success' => 'Produk berhasil dihapus dari keranjang.']);
     }
 
     private function calculateTotalPrice($carts)

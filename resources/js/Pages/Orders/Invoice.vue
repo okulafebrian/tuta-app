@@ -20,23 +20,26 @@
                 <div class="space-y-2">
                     <div class="flex gap-1">
                         <div class="w-28 text-zinc-500">Pembeli</div>
-                        <div class="text-zinc-500">:</div>
-                        <div class="font-bold">{{ order.user }}</div>
+                        <div class="w-1 text-zinc-500">:</div>
+                        <div class="flex-1 font-bold">{{ order.user }}</div>
                     </div>
                     <div class="flex gap-1">
                         <div class="w-28 text-zinc-500">Tanggal Pembelian</div>
-                        <div class="text-zinc-500">:</div>
-                        <div class="font-bold">{{ order.formatted_created_at }}</div>
+                        <div class="w-1 text-zinc-500">:</div>
+                        <div class="flex-1 font-bold">{{ order.formatted_created_at }}</div>
                     </div>
                     <div class="flex gap-1">
                         <div class="w-28 text-zinc-500">Alamat Pengiriman</div>
-                        <div class="text-zinc-500">:</div>
-                        <div class="space-y-1">
+                        <div class="w-1 text-zinc-500">:</div>
+                        <div class="flex-1 space-y-1">
                             <div>
                                 <span class="font-bold">{{ order.receiver_name }}</span> ({{ order.receiver_phone }})
                             </div>
                             <div>{{ order.receiver_address }}</div>
-                            <div>{{ order.district }}, {{ order.city }}, {{ order.zip_code }} {{ order.province }}</div>
+                            <div>
+                                {{ order.district.name }}, {{ order.city.name }}, {{ order.zip_code.name }} {{
+                                    order.province.name }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -111,13 +114,13 @@
                     <div class="text-zinc-500 mb-1">Metode Pembayaran:</div>
                     <div class="font-bold">{{ formatText(order.payment_type) }}</div>
                 </div>
-                <div v-if="order.paid_at"
-                    class="ps-4 pe-5 py-2 flex gap-2 items-center border-[1.5px] border-green-600 font-semibold text-green-600 text-sm rounded">
-                    <CheckBadgeIcon class="w-6 h-6" /> LUNAS
+                <div v-if="order.paid_at || order.payment_type === 'cod'"
+                    class="px-3 py-2 flex gap-2 items-center border border-green-600 font-semibold text-green-600 text-xs rounded">
+                    <CheckBadgeIcon class="w-5 h-5 stroke-2" /> LUNAS
                 </div>
                 <div v-else
-                    class="ps-4 pe-5 py-2 flex gap-2 items-center border-[1.5px] border-red-600 font-semibold text-red-600 text-sm rounded">
-                    <ExclamationCircleIcon class="w-6 h-6" /> BELUM LUNAS
+                    class="px-3 py-2 flex gap-2 items-center border border-red-600 font-semibold text-red-600 text-xs rounded">
+                    <ExclamationCircleIcon class="w-5 h-5 stroke-2" /> BELUM LUNAS
                 </div>
             </div>
         </div>
@@ -144,6 +147,11 @@ export default {
     },
     components: {
         CheckBadgeIcon, ExclamationCircleIcon
+    },
+    mounted() {
+        this.getCurrentDateTime();
+
+        this.print();
     },
     methods: {
         getCurrentDateTime() {
@@ -180,11 +188,13 @@ export default {
                     return 'Indomaret/Alfamart'
                 case 'akulaku':
                     return 'Akulaku'
+                case 'cod':
+                    return 'COD'
             }
+        },
+        print() {
+            window.print()
         }
-    },
-    created() {
-        this.getCurrentDateTime();
     }
 }
 </script>

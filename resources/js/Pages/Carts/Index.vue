@@ -1,6 +1,8 @@
 <template>
     <Head title="Keranjang" />
 
+    <Notif v-if="flash.error || flash.success" :flash="flash" />
+
     <div class="h-full px-4 xl:px-24 py-10">
         <div v-if="carts.length > 0">
             <div class="text-xl font-bold mb-6">Keranjang</div>
@@ -95,7 +97,8 @@ export default {
     },
     props: {
         carts: Object,
-        totalPrice: Number
+        totalPrice: Number,
+        flash: Object
     },
     components: {
         NumberInput, TrashIcon, Cart

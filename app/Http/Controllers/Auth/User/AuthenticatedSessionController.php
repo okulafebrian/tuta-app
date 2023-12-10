@@ -53,6 +53,10 @@ class AuthenticatedSessionController extends Controller
         $user = User::where('phone_number', $phoneNumber)->first();
 
         if ($user) {
+            $user->update([
+                'phone_verified_at' => null
+            ]);
+
             $user->sendPhoneVerificationNotification(true);
             
             Auth::login($user);

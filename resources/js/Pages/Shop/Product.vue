@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="mb-6">
-                    <div class="text-sm font-semibold mb-2">Atur Jumlah {{ stock }}</div>
+                    <div class="text-sm font-semibold mb-2">Atur Jumlah</div>
                     <div class="w-fit">
                         <NumberInput v-model="form.quantity" :max="stock" />
                     </div>
