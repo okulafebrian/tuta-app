@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('awb_no')->index();
             $table->string('des_code');
-            $table->timestamp('send_start_time');
-            $table->timestamp('send_end_time');
+            $table->timestamp('send_start_time')->nullable();
+            $table->timestamp('send_end_time')->nullable();
             $table->string('etd');
             $table->timestamps();
             $table->softDeletes();
