@@ -34,7 +34,7 @@ class Shipping extends Model
 
             return 'TUTA-' . $queueNumber;
         } else {
-            return 'COBATUTA-000002';
+            return 'TUTA-000005';
         }
     }
 
