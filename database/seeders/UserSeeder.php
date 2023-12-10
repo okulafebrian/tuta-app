@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
                 'email' => 'shop@tuta.co.id',
                 'phone_number' => null,
                 'phone_verified_at' => null,
-                'password' => Hash::make('abc123')
+                'password' => Hash::make('shopTUTA555')
             ],
             [
                 'role_id' => '3',
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
                 'email' => 'it@tuta.co.id',
                 'phone_number' => null,
                 'phone_verified_at' => null,
-                'password' => Hash::make('abc123')
+                'password' => Hash::make('itTUTA555')
             ]
         ]);
     }

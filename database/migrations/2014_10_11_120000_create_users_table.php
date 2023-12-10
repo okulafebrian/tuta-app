@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('phone_verify_code')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->integer('phone_attempts_left')->default(0);
-            $table->integer('phone_attempts_left')->default(0);
             $table->integer('otp_requests_left')->default(0);
             $table->timestamp('phone_last_attempt_date')->nullable();
             $table->timestamp('phone_verify_code_sent_at')->nullable();
